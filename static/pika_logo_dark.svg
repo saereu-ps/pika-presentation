@@ -1,0 +1,23 @@
+<svg width="640" height="232" viewBox="0 0 640 232" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Icon: ชุดเดียวกับโลโก้มุมซ้ายบนของแอป (.sidebar-logo-icon) — คงสี brand เดิมแม้ธีมมืด -->
+  <defs>
+    <linearGradient id="pikaLogoTileDark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1E3A8A"/>
+      <stop offset="1" stop-color="#2563EB"/>
+    </linearGradient>
+  </defs>
+  <rect x="276" y="8" width="88" height="88" rx="25" fill="url(#pikaLogoTileDark)"/>
+  <polygon points="322.33,28.67 299,56.67 320,56.67 317.67,75.33 341,47.33 320,47.33" fill="#FFFFFF"/>
+
+  <!-- Pika Wiki wordmark — เวอร์ชัน dark theme: Pika สว่าง / Wiki ฟ้า (เหมือน sidebar ธีมมืด) -->
+  <text x="320" y="146" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="50" fill="#F1F5F9"><tspan font-weight="600">Pika</tspan><tspan dx="14" font-weight="400" fill="#38BDF8">Wiki</tspan></text>
+
+  <!-- Divider lines + dots -->
+  <line x1="160" y1="160" x2="284" y2="160" stroke="#475569" stroke-width="1"/>
+  <circle cx="308" cy="160" r="3" fill="#60A5FA"/>
+  <circle cx="320" cy="160" r="3" fill="#60A5FA"/>
+  <line x1="344" y1="160" x2="480" y2="160" stroke="#475569" stroke-width="1"/>
+
+  <!-- Tagline -->
+  <text x="320" y="196" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="400" letter-spacing="3.5" fill="#94A3B8">PRESALE INTELLIGENCE &amp; KNOWLEDGE ASSISTANCE</text>
+</svg>

@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pika Wiki — แพลตฟอร์มคลังความรู้อัจฉริยะระดับองค์กร พร้อม Live Demo</title>
+  <link rel="icon" type="image/svg+xml" href="static/pika_icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="static/keynote.css" />
+</head>
+<body data-scene="1">
+
+  <!-- ========================================================================
+       1. SINGLE-TIER APPLE GLOBAL NAVIGATION (CLEAN, NO WRAPPING)
+       ======================================================================== -->
+  <header class="apple-global-nav">
+    <div class="apple-nav-inner">
+      <button class="apple-nav-logo" data-goto="1" title="กลับสู่หน้าแรก">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+        <span>Pika</span>
+      </button>
+
+      <nav class="apple-nav-links" aria-label="หัวข้อการนำเสนอ">
+        <button class="apple-nav-item active" data-goto="1">ภาพรวม</button>
+        <button class="apple-nav-item" data-goto="2">ทำไมต้อง Pika</button>
+        <button class="apple-nav-item" data-goto="3">การสกัดข้อมูล</button>
+        <button class="apple-nav-item" data-goto="4">กราฟความรู้</button>
+        <button class="apple-nav-item" data-goto="5">โหมดค้นลึก</button>
+        <button class="apple-nav-item" data-goto="6">ความปลอดภัย</button>
+        <button class="apple-nav-item" data-goto="7">การเชื่อมต่อ</button>
+        <button class="apple-nav-item" data-goto="8">ไทม์ไลน์</button>
+        <button class="apple-nav-item" data-goto="9">บทสรุป</button>
+      </nav>
+
+      <div class="apple-nav-actions">
+        <button class="apple-nav-pill active-play" id="btnOpenLiveDemo">ทดลอง Live Demo</button>
+        <button class="apple-nav-pill" id="btnAutoPlay">เล่นอัตโนมัติ</button>
+        <button class="apple-nav-icon-btn" id="btnFullscreen" title="เต็มหน้าจอ (F)" aria-label="เต็มหน้าจอ">
+          <svg class="fs-icon-enter" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+          </svg>
+          <svg class="fs-icon-exit" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div id="autoPlayProgressBar" class="apple-autoplay-progress"></div>
+  </header>
+
+  <!-- ========================================================================
+       2. VOLUMETRIC PROLED XDR BACKLIGHT & SIDE NAVIGATION ARROWS
+       ======================================================================== -->
+  <div class="xdr-stage-backlight" id="xdrBacklight"></div>
+
+  <button class="apple-side-arrow left" id="btnPrevSlide" title="หน้าก่อนหน้า">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+      <path d="M15 18l-6-6 6-6"/>
+    </svg>
+  </button>
+  <button class="apple-side-arrow right" id="btnNextSlide" title="หน้าถัดไป">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+      <path d="M9 18l6-6-6-6"/>
+    </svg>
+  </button>
+
+  <!-- ========================================================================
+       3. CHOREOGRAPHED 3D MASCOT ACTOR RIG (100% ORIGINAL PIKA CLAY BOY)
+       ======================================================================== -->
+  <div id="pikaActorRig">
+    <div class="apple-whisper-bubble" id="mascotSpeech">
+      สวัสดีครับ ผม <strong>Pika</strong> ผู้ช่วยคลังความรู้ของทีม ลองคลิกที่หัวข้อบนหน้าจอ หรือกดปุ่ม <strong>ทดลอง Live Demo</strong> เพื่อลองเล่นหน้าเว็บจริงได้เลยครับ
+    </div>
+
+    <div id="blueprintUniverse">
+      <div id="blueprintStage">
+        <div id="mascotDragZone" title="คลิกเพื่อพูดคุย หรือลากเพื่อหมุนตัว Pika แบบ 3 มิติ"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       4. APPLE KEYNOTE 8-SCENE PRESENTATION STAGE (WITH REAL 1:1 LIVE DEMOS)
+       ======================================================================== -->
+  <main class="apple-stage-viewport" id="deckViewport">
+
+    <!-- ======================================================================
+         SCENE 01 : HERO LAUNCH (Center Mascot Spotlight, Balanced Left/Right Wings)
+         ====================================================================== -->
+    <section class="apple-scene active-scene" id="scene-1" data-scene-idx="1">
+      <div class="hero-scene-shell">
+        <div class="apple-hero-center reveal-item">
+          <h1 class="apple-hero-title">Pika Wiki</h1>
+          <div class="apple-hero-xdr">ผู้ช่วยคลังความรู้อัจฉริยะระดับองค์กร</div>
+          <p class="apple-hero-sub">
+            เปลี่ยนเอกสารโครงการที่กระจัดกระจาย ให้เป็นฐานความรู้ที่เชื่อมโยงถึงกัน<br/>
+            ค้นหาแม่นยำ อ้างอิงแหล่งที่มาชัดเจน และพร้อมตอบทุกคำถามสำคัญของทีมได้ทันที
+          </p>
+          <div class="apple-cta-row">
+            <button class="btn-apple-solid" data-goto="2">เริ่มต้นชมฟีเจอร์</button>
+            <button class="btn-apple-outline" data-open-workbench="report">เปิดหน้าแอป Live Demo จริง</button>
+            <button class="btn-apple-outline" id="btnHeroGreet">ทักทาย Pika</button>
+          </div>
+        </div>
+
+        <div class="hero-wing-grid reveal-item">
+          <!-- LEFT WING: ASYMMETRICAL BENTO MODULES (SCENE 1 ADAPTED BENTO) -->
+          <div class="hero-wing-col bento-col-left">
+
+            <!-- Card 1: Bento Coral (Royal Blue Hero Launch Overview & 6 Core Capabilities) -->
+            <div class="bento-card bento-coral bento-tilt-card bento-float-1 wiki-project-link" data-id="hero-bento-project" id="heroBentoCoral">
+              <div class="bento-card-header">
+                <h3 class="bento-heading-condensed">PIKA CORE ENGINE</h3>
+                <div class="bento-header-pills">
+                  <span class="coral-pill">5X-PARALLEL</span>
+                  <span class="coral-pill">HYBRID-GRAPHRAG</span>
+                  <button type="button" class="bento-circle-arrow" data-open-workbench="report" title="ทดลองเล่นหน้าเว็บจริง">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="coral-divider"></div>
+
+              <div class="coral-summary-banner">
+                <div class="coral-summary-top">
+                  <span class="coral-fullname">เร็วขึ้น 5 เท่า · ประมวลผลเอกสารชุดใหญ่</span>
+                  <span class="coral-dark-badge">v1.0-launch</span>
+                </div>
+                <p class="coral-summary-text">เปลี่ยนเอกสารโครงการที่กระจัดกระจายให้เป็นฐานความรู้ที่อ่านและสรุปพร้อมกัน 5 ช่องทาง ลดเวลาเตรียมข้อมูลจากหลักชั่วโมงเหลือเพียงไม่กี่นาที</p>
+              </div>
+
+              <!-- 6 Core Capability Tiles (3x2 Grid) -->
+              <div class="coral-specs-grid">
+                <div class="coral-spec-card interactive-spec-pill" data-spec-key="ingest" data-speech="<strong>PARALLEL INGEST:</strong> อ่านและสรุปไฟล์โครงการพร้อมกัน 5 ช่องทางใน 3.8 วินาทีครับ">
+                  <span class="coral-spec-label">PARALLEL INGEST</span>
+                  <span class="coral-spec-value">อ่าน 5 ไฟล์พร้อมกันใน 3.8 วิ</span>
+                </div>
+                <div class="coral-spec-card interactive-spec-pill" data-spec-key="chunk" data-speech="<strong>SMART CHUNKING:</strong> ถอดความหมายทั้งเอกสาร ไม่หั่นท่อนจนตารางและบริบทขาดออกจากกันครับ">
+                  <span class="coral-spec-label">SMART CHUNKING</span>
+                  <span class="coral-spec-value">ไม่ตัดท่อน รักษารูปแบบตาราง</span>
+                </div>
+                <div class="coral-spec-card interactive-spec-pill" data-spec-key="c4" data-speech="<strong>AUTO C4 MODEL:</strong> สกัด Entity และสร้างพิมพ์เขียวสถาปัตยกรรมอัตโนมัติครับ">
+                  <span class="coral-spec-label">AUTO C4 MODEL</span>
+                  <span class="coral-spec-value">สกัด Entity และโครงสร้างระบบ</span>
+                </div>
+                <div class="coral-spec-card interactive-spec-pill" data-spec-key="format" data-speech="<strong>MULTI-FORMAT:</strong> รองรับเอกสารทั้ง PDF, Word, Excel, PowerPoint และภาพสแกนครับ">
+                  <span class="coral-spec-label">MULTI-FORMAT</span>
+                  <span class="coral-spec-value">รองรับ PDF, Word, Excel, PPTX</span>
+                </div>
+                <div class="coral-spec-card interactive-spec-pill" data-spec-key="dedup" data-speech="<strong>DEDUPLICATION:</strong> คัดกรองไฟล์ซ้ำด้วยรหัส SHA-256 ช่วยประหยัดเวลาและพื้นที่จัดเก็บครับ">
+                  <span class="coral-spec-label">DEDUPLICATION</span>
+                  <span class="coral-spec-value">คัดกรองไฟล์ซ้ำด้วย SHA-256</span>
+                </div>
+                <div class="coral-spec-card interactive-spec-pill" data-spec-key="tags" data-speech="<strong>ENTERPRISE TAGS:</strong> จัดหมวดหมู่ 4 ด้าน ลูกค้า เทคโนโลยี โครงการ และบทวิเคราะห์ครับ">
+                  <span class="coral-spec-label">ENTERPRISE TAGS</span>
+                  <span class="coral-spec-value">จัดกลุ่มข้อมูลตามหมวดหมู่งาน</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Subgrid: Graph & Governance -->
+            <div class="bento-left-subgrid">
+              <!-- Card 2: Mint Graph -->
+              <div class="bento-card bento-mint bento-tilt-card bento-float-2 wiki-project-link" data-id="hero-bento-graph" id="heroBentoMint">
+                <div class="bento-card-header">
+                  <h3 class="bento-heading-condensed dark-ink">HYBRID SEARCH</h3>
+                  <div class="bento-header-pills">
+                    <span class="mint-pill">2 มิติ</span>
+                    <button type="button" class="bento-circle-arrow mint-arrow" data-open-workbench="graph" title="เปิดหน้ากราฟความสัมพันธ์">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="mini-graph" id="heroMiniGraph" role="img" aria-label="กราฟจำลองความสัมพันธ์">
+                  <svg viewBox="0 0 220 90" class="mini-graph-svg">
+                    <line x1="45" y1="45" x2="110" y2="25" class="graph-edge-anim"/>
+                    <line x1="45" y1="45" x2="110" y2="65" class="graph-edge-anim"/>
+                    <line x1="110" y1="25" x2="175" y2="45" class="graph-edge-anim"/>
+                    <line x1="110" y1="65" x2="175" y2="45" class="graph-edge-anim"/>
+                    <g class="graph-node-pulse" transform="translate(45,45)"><circle r="14" fill="#2563EB"/><text text-anchor="middle" dy="4" fill="#FFFFFF" font-size="8" font-weight="700">BM25</text></g>
+                    <g class="graph-node-pulse" transform="translate(110,25)"><circle r="12" fill="#3B82F6"/><text text-anchor="middle" dy="4" fill="#FFFFFF" font-size="7.5" font-weight="600">Vector</text></g>
+                    <g class="graph-node-pulse" transform="translate(110,65)"><circle r="12" fill="#0284C7"/><text text-anchor="middle" dy="4" fill="#FFFFFF" font-size="7.5" font-weight="600">Links</text></g>
+                    <g class="graph-node-pulse" transform="translate(175,45)"><circle r="14" fill="#1D4ED8"/><text text-anchor="middle" dy="4" fill="#FFFFFF" font-size="8" font-weight="700">RRF</text></g>
+                  </svg>
+                </div>
+                <div class="mini-graph-empty">ผสานคำค้นเฉพาะทางเข้ากับความหมายเชิงลึก</div>
+              </div>
+
+              <!-- Card 3: Sage Governance -->
+              <div class="bento-card bento-sage bento-tilt-card bento-float-3 wiki-project-link" data-id="hero-bento-gov" id="heroBentoSage">
+                <div class="bento-card-header">
+                  <h3 class="bento-heading-condensed dark-ink">GOVERNANCE</h3>
+                  <button type="button" class="bento-circle-arrow sage-arrow" data-open-workbench="history" title="เปิดหน้าตรวจสอบธรรมาภิบาล">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+                  </button>
+                </div>
+                <div class="sage-meta-list">
+                  <div class="sage-meta-row">
+                    <span class="sage-meta-k">VERIFIED CITATION</span>
+                    <span class="sage-meta-v">ตรวจสอบที่มาได้ 100%</span>
+                  </div>
+                  <div class="sage-meta-row">
+                    <span class="sage-meta-k">AUTO-FAILOVER</span>
+                    <span class="sage-meta-v">สลับระบบสำรอง 24/7</span>
+                  </div>
+                  <div class="sage-meta-row">
+                    <span class="sage-meta-k">DATA PRIVACY</span>
+                    <span class="sage-meta-v">แยกคลังความรู้รายทีมชัดเจน</span>
+                  </div>
+                  <div class="sage-meta-row">
+                    <span class="sage-meta-k">LAST VERIFIED</span>
+                    <span class="sage-meta-v">พร้อมใช้งานระดับองค์กร (Production)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CENTER MASCOT SPACER: 380px for 3D Pika -->
+          <div class="mascot-stage-anchor" aria-hidden="true"></div>
+
+          <!-- RIGHT WING: ASYMMETRICAL BENTO MODULES -->
+          <div class="hero-wing-col bento-col-right">
+
+            <!-- Card 4: Compact Dark Document Ingestion Card with Amber Tile -->
+            <div class="bento-card bento-dark-compact bento-tilt-card bento-float-4 wiki-project-link" data-id="hero-bento-ingest" id="heroBentoIngest" data-open-workbench="upload">
+              <div class="amber-solid-tile">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+              </div>
+              <div class="compact-copy">
+                <div class="bento-heading-condensed compact-title">DOCUMENT INGESTION</div>
+                <p class="compact-desc">อัปโหลดเอกสาร บันทึก หรือ URL เพื่อจัดหมวดหมู่เข้าสู่คลังความรู้</p>
+              </div>
+              <button type="button" class="bento-circle-arrow white-circle" title="ไปหน้าอัปโหลดเอกสาร">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+              </button>
+            </div>
+
+            <!-- Card 5: Violet / Deep Slate Knowledge Explorer Card -->
+            <div class="bento-card bento-violet bento-tilt-card bento-float-5 wiki-project-link" data-id="hero-bento-files" id="heroBentoFiles">
+              <div class="bento-card-header">
+                <h3 class="bento-heading-condensed">KNOWLEDGE REPOSITORY</h3>
+                <button type="button" class="bento-circle-arrow white-circle" data-open-workbench="history" title="เปิดหน้าเบราว์เซอร์ไฟล์">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+                </button>
+              </div>
+              <div class="tor-real-list file-recent-list">
+                <div class="tor-real-item" data-open-workbench="history">
+                  <div class="tor-real-top">
+                    <span class="tor-real-code">01 · DOC-SPEC</span>
+                    <span class="tor-real-status">สกัดแล้ว 100%</span>
+                  </div>
+                  <span class="tor-real-req">Cloud_Platform_Spec_2026.pdf (48 หน้า)</span>
+                </div>
+                <div class="tor-real-item" data-open-workbench="history">
+                  <div class="tor-real-top">
+                    <span class="tor-real-code">02 · BOQ-EXCEL</span>
+                    <span class="tor-real-status">พร้อมแมปปิ้ง</span>
+                  </div>
+                  <span class="tor-real-req">Enterprise_BOQ_Cost_Structure.xlsx</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 6: Dark Charcoal AI Assistant Card -->
+            <div class="bento-card bento-dark-ai bento-tilt-card bento-float-6 wiki-project-link" data-id="hero-bento-ai" id="heroBentoAi">
+              <div class="bento-card-header">
+                <h3 class="bento-heading-condensed">ASK PIKA AI ASSISTANT</h3>
+                <button type="button" class="bento-circle-arrow white-circle" data-open-workbench="report" title="เปิดหน้าแชท PIKA AI">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+                </button>
+              </div>
+
+              <div class="ai-speech-row">
+                <div class="ai-avatar-circle">Pk</div>
+                <div class="ai-speech-bubble" id="heroAiBubbleText">
+                  สวัสดีครับ ผมพร้อมช่วยอ่านเอกสาร สรุปข้อมูลทางเทคนิค และหาคำตอบอ้างอิงจากคลังความรู้ทันทีครับ
+                </div>
+              </div>
+
+              <div class="ai-quick-pills">
+                <button type="button" class="ai-quick-pill pill-mint" id="btnHeroQuickTor">สรุปจุดเด่น 5x Ingest</button>
+                <button type="button" class="ai-quick-pill pill-sage" id="btnHeroQuickBlue">วิธีค้นหาแบบ 2 มิติ</button>
+              </div>
+
+              <div class="ai-bottom-bar">
+                <button type="button" class="ai-coral-plus" title="เริ่มแชทใหม่">+</button>
+                <div class="ai-input-pill">
+                  <input type="text" id="heroAiInput" class="ai-input-field" placeholder="ถาม Pika เกี่ยวกับฟีเจอร์ของระบบ..." onkeydown="if(event.key==='Enter'){event.preventDefault();window.submitHeroInlineChat();}">
+                  <button type="button" class="ai-send-icon" id="btnHeroSendChat" title="ส่งคำถาม">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SCENE 02 : WHY PIKA WIKI (Mascot Left, Content Right)
+         ====================================================================== -->
+    <section class="apple-scene" id="scene-2" data-scene-idx="2">
+      <div class="apple-col-right" style="width:64%; max-width:840px;">
+        <div class="reveal-item">
+          <div class="apple-eyebrow">ทำไมต้อง Pika Wiki</div>
+          <h2 class="apple-section-headline">
+            <span class="headline-line">ลืมการค้นหาแบบเดิมที่ข้อมูลขาดตอน</span>
+            <span class="headline-line apple-gradient-span">สู่คลังความรู้ที่เชื่อมโยงครบทุกมิติ</span>
+          </h2>
+          <p class="apple-section-lead">
+            ระบบค้นหาทั่วไปมักตัดเอกสารเป็นท่อนสั้นๆ จนบริบทขาดความต่อเนื่อง<br/>
+            Pika Wiki อ่านและเรียบเรียงใหม่ ให้เป็นหน้าวิกิที่เชื่อมโยงกันอย่างเป็นระบบ
+          </p>
+        </div>
+
+        <div class="reveal-item" style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+          <div class="pro-card wiki-project-link" data-id="rag-pain-chunk">
+            <div class="bento-tag-mono" style="margin-bottom:6px;">ข้อจำกัดของระบบค้นหาทั่วไป</div>
+            <div class="pro-card-title project-name">ข้อมูลถูกตัดแยกส่วน ตอบข้ามไฟล์ไม่ได้</div>
+            <p class="pro-card-desc">
+              การหั่นเอกสารเป็นชิ้นเล็กๆ ทำให้ระบบไม่เห็นภาพรวมของโครงการ ตอบคำถามเชื่อมโยงหลายเอกสารไม่ได้ และต้องประมวลผลซ้ำทุกครั้ง
+            </p>
+          </div>
+
+          <div class="pro-card wiki-project-link" data-id="wiki-karpathy-model">
+            <div class="bento-tag-mono" style="margin-bottom:6px;">สถาปัตยกรรมของ Pika Wiki</div>
+            <div class="pro-card-title project-name">อ่านครั้งเดียว จัดระเบียบพร้อมใช้งานตลอดไป</div>
+            <p class="pro-card-desc">
+              กลั่นกรองเอกสารดิบเป็นบทความวิกิแยกตามหมวดหมู่ พร้อมเชื่อมโยงลูกค้า โครงการ และเทคโนโลยีเข้าด้วยกันโดยอัตโนมัติ
+            </p>
+          </div>
+        </div>
+
+        <div class="reveal-item" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;">
+          <div class="pro-card wiki-project-link" data-id="cat-entities" style="padding:15px;">
+            <div class="pipe-idx">หมวดที่ 01</div>
+            <div class="pro-card-title project-name" style="font-size:14px;">ลูกค้าและองค์กร</div>
+            <p class="pro-card-desc" style="font-size:12px;">รวบรวมประวัติลูกค้า พันธมิตร และผู้เกี่ยวข้องไว้ในที่เดียว</p>
+          </div>
+          <div class="pro-card wiki-project-link" data-id="cat-concepts" style="padding:15px;">
+            <div class="pipe-idx">หมวดที่ 02</div>
+            <div class="pro-card-title project-name" style="font-size:14px;">เทคโนโลยี</div>
+            <p class="pro-card-desc" style="font-size:12px;">สรุปสถาปัตยกรรม มาตรฐานเทคนิค และแนวทางออกแบบระบบ</p>
+          </div>
+          <div class="pro-card wiki-project-link" data-id="cat-projects" style="padding:15px;">
+            <div class="pipe-idx">หมวดที่ 03</div>
+            <div class="pro-card-title project-name" style="font-size:14px;">ข้อมูลโครงการ</div>
+            <p class="pro-card-desc" style="font-size:12px;">จัดเก็บขอบเขตงาน ข้อกำหนด สเปกเทคนิค และแผนส่งมอบรายโครงการ</p>
+          </div>
+          <div class="pro-card wiki-project-link" data-id="cat-syntheses" style="padding:15px;">
+            <div class="pipe-idx">หมวดที่ 04</div>
+            <div class="pro-card-title project-name" style="font-size:14px;">บทสรุปวิเคราะห์</div>
+            <p class="pro-card-desc" style="font-size:12px;">เปรียบเทียบจุดเด่น ข้อจำกัด และแนวทางแก้ปัญหาจากหลายโครงการ</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SCENE 03 : 1:1 LIVE DEMO OF "UPLOAD NOTE" (#page-analyze from presale-wiki2)
+         ====================================================================== -->
+    <section class="apple-scene" id="scene-3" data-scene-idx="3">
+      <div class="apple-col-left" style="width:64%; max-width:840px; gap:12px;">
+        <div class="reveal-item">
+          <div class="apple-eyebrow">การสกัดข้อมูลอัจฉริยะ — หน้า Upload Note</div>
+          <h2 class="apple-section-headline">
+            <span class="headline-line">โยนไฟล์เอกสารโครงการเข้าสู่ระบบ</span>
+            <span class="headline-line apple-gold-span">ประมวลผลขนาน 5 ช่องทางอัตโนมัติ</span>
+          </h2>
+        </div>
+
+        <!-- 1:1 Authentic Pika Wiki "Upload Note" Window -->
+        <div class="pika-app-window reveal-item" id="slideUploadApp" data-app-theme="dark">
+          <div class="pika-window-chrome">
+            <div class="chrome-dots">
+              <span class="chrome-dot red"></span>
+              <span class="chrome-dot yellow"></span>
+              <span class="chrome-dot green"></span>
+            </div>
+            <span class="chrome-window-title">Pika Wiki — Upload Note</span>
+          </div>
+
+          <div class="real-upload-shell">
+            <div class="real-upload-header">
+              <div class="real-upload-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <div>
+                <div style="font-size:10px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">Pika Wiki</div>
+                <div style="font-size:18px; font-weight:700; color:var(--text-primary); letter-spacing:-0.02em;">Upload Note</div>
+                <div style="font-size:11.5px; color:var(--text-secondary);">Turn meeting notes and documents into wiki pages the whole team can search.</div>
+              </div>
+            </div>
+
+            <div class="real-upload-card">
+              <!-- LEFT COLUMN: File Metadata -->
+              <div>
+                <div style="font-size:13.5px; font-weight:700; color:var(--text-primary); margin-bottom:2px;">File Metadata</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Information to organize this note in the wiki.</div>
+
+                <div class="real-field">
+                  <label>Upload into project *</label>
+                  <select class="real-premium-input" id="demoUploadProject">
+                    <option value="enterprise-knowledge">enterprise-knowledge (คลังความรู้กลางระดับองค์กร)</option>
+                    <option value="cloud-migration-2026">cloud-migration-2026 (โครงการ Cloud ERP)</option>
+                    <option value="cyber-security-sla">cyber-security-sla (มาตรฐานความปลอดภัย)</option>
+                  </select>
+                </div>
+
+                <div class="real-field">
+                  <label>Author *</label>
+                  <input type="text" class="real-premium-input" id="demoUploadAuthor" value="Admin" />
+                </div>
+
+                <div class="real-field" style="margin-bottom:0;">
+                  <label>Title (optional)</label>
+                  <input type="text" class="real-premium-input" id="demoUploadTitle" value="ชุดเอกสารโครงการ Cloud ERP 2026 (5 ไฟล์)" />
+                </div>
+              </div>
+
+              <!-- RIGHT COLUMN: Dropzone & Action -->
+              <div style="display:flex; flex-direction:column;">
+                <div class="real-source-tabs">
+                  <div class="real-stab active" id="tabSlideFile">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    Upload a file
+                  </div>
+                  <div class="real-stab" id="tabSlideText">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+                    Type text
+                  </div>
+                </div>
+
+                <div class="real-drop-zone" id="demoDropZone">
+                  <div class="real-drop-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  </div>
+                  <div style="font-size:13px; font-weight:600; color:var(--text-primary);">Click or drag files here</div>
+                  <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Supports .txt, .md, .csv, .xlsx, .docx, .pptx, .pdf, .jot</div>
+                  <div id="demoSelectedFilesPill" style="margin-top:8px; display:inline-block; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14); color:var(--text-primary); font-size:11px; font-weight:500; padding:3px 10px; border-radius:999px;">
+                    เลือกแล้ว 5 ไฟล์: TOR_Main.pdf, Spec_Cloud.docx, BOQ_Matrix.xlsx, SLA_Diagram.pdf, Meeting_Note.jot
+                  </div>
+                </div>
+
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px; padding-top:8px; border-top:1px solid var(--border-light);">
+                  <div>
+                    <div style="font-size:12px; font-weight:600; color:var(--text-primary);">Auto-commit (Bypass Review)</div>
+                    <div style="font-size:10.5px; color:var(--text-muted);">Extracted data will bypass the Review Inbox.</div>
+                  </div>
+                  <input type="checkbox" id="demoBypassCheck" checked style="width:16px; height:16px; accent-color:#2563EB; cursor:pointer;" />
+                </div>
+
+                <div style="margin-top:10px;">
+                  <button class="real-upload-btn" id="btnRunIngestDemo">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span>Upload and Process Note</span>
+                  </button>
+                </div>
+
+                <!-- Real Progress Bar & Dark Ingest Terminal -->
+                <div class="real-ingest-prog" id="demoIngestProgWrap">
+                  <div class="real-ingest-prog-head">
+                    <span id="demoIngestStageLabel">พร้อมประมวลผลแบบขนาน 5 ช่องทาง (Parallel Workers = 5)</span>
+                    <span id="demoIngestPct" style="font-weight:700; color:var(--text-primary);">0%</span>
+                  </div>
+                  <div class="real-ingest-prog-track">
+                    <div class="real-ingest-prog-fill" id="demoIngestFill"></div>
+                  </div>
+                </div>
+
+                <div class="real-ingest-log" id="demoIngestLog">
+                  <div class="real-log-line info">[พร้อมทำงาน] ระบบกำลังเริ่มสาธิตการสกัดเอกสารทั้ง 5 ขั้นตอนอัตโนมัติ...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SCENE 04 : 1:1 LIVE DEMO OF "RELATIONSHIP GRAPH" & "FILE BROWSER"
+         ====================================================================== -->
+    <section class="apple-scene" id="scene-4" data-scene-idx="4">
+      <div class="apple-col-right" style="width:64%; max-width:840px; gap:12px;">
+        <div class="reveal-item">
+          <div class="apple-eyebrow">แผนผังความรู้และคลังบทความวิกิ — Graph &amp; File Browser</div>
+          <h2 class="apple-section-headline">
+            <span class="headline-line">สำรวจความเชื่อมโยงและอ่านหน้าวิกิ</span>
+            <span class="headline-line apple-gradient-span">ผ่านแผนผังความรู้และโครงสร้างไฟล์จริง</span>
+          </h2>
+        </div>
+
+        <!-- 1:1 Authentic Graph & File Browser Window -->
+        <div class="pika-app-window reveal-item" id="slideGraphApp" data-app-theme="dark">
+          <div class="pika-window-chrome">
+            <div class="chrome-dots">
+              <span class="chrome-dot red"></span>
+              <span class="chrome-dot yellow"></span>
+              <span class="chrome-dot green"></span>
+            </div>
+            <span class="chrome-window-title" id="slideGraphChromeUrl">Pika Wiki — Relationship Graph</span>
+            <div class="chrome-clean-tabs">
+              <button class="chrome-tab-btn active" id="btnSwitchGraphView">Relationship Graph</button>
+              <button class="chrome-tab-btn" id="btnSwitchFbView">File Browser</button>
+            </div>
+          </div>
+
+          <!-- PANE A: Real Relationship Graph (#page-graph) -->
+          <div id="slidePaneGraph" style="padding:14px 18px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+              <div>
+                <div style="font-size:10px; color:var(--text-muted);">Pika WiKi</div>
+                <div style="font-size:18px; font-weight:700; color:var(--text-primary);">Relationship Graph</div>
+                <div style="font-size:11.5px; color:var(--text-secondary);">See how projects, people, and technologies connect across your knowledge base.</div>
+              </div>
+              <select class="real-premium-input" style="width:190px; padding:6px 10px; font-size:11.5px;">
+                <option>presale-enterprise (24 nodes)</option>
+                <option>cloud-migration-2026</option>
+              </select>
+            </div>
+
+            <!-- Real Graph Legend -->
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:8px; font-size:11px; color:var(--text-secondary);">
+              <span style="display:inline-flex; align-items:center; gap:5px;"><span style="width:8px; height:8px; border-radius:50%; background:#60A5FA;"></span>project (โครงการ)</span>
+              <span style="display:inline-flex; align-items:center; gap:5px;"><span style="width:8px; height:8px; border-radius:50%; background:#22D3EE;"></span>client (ลูกค้า)</span>
+              <span style="display:inline-flex; align-items:center; gap:5px;"><span style="width:8px; height:8px; border-radius:50%; background:#4ADE80;"></span>solution (เทคโนโลยี)</span>
+              <span style="display:inline-flex; align-items:center; gap:5px;"><span style="width:8px; height:8px; border-radius:50%; background:#FBBF24;"></span>proposal (ใบเสนอราคา)</span>
+              <span style="display:inline-flex; align-items:center; gap:5px;"><span style="width:8px; height:8px; border-radius:50%; background:#A78BFA;"></span>source (เอกสารต้นฉบับ)</span>
+            </div>
+
+            <div class="pro-graph-canvas-wrap" style="height:260px; border-radius:14px;">
+              <canvas id="appleGraphCanvas"></canvas>
+              <div style="position:absolute; bottom:8px; left:12px; font-size:11px; color:rgba(241,245,249,0.75);">
+                ลากโหนดเพื่อขยับกราฟ หรือคลิกโหนดเพื่อดูความเชื่อมโยงของข้อมูล
+              </div>
+            </div>
+          </div>
+
+          <!-- PANE B: Real File Browser (#page-history) -->
+          <div id="slidePaneFb" style="display:none; padding-top:12px;">
+            <div style="padding:0 14px 8px; display:flex; align-items:center; justify-content:space-between;">
+              <div class="real-source-tabs" style="margin-bottom:0;">
+                <div class="real-stab active">Pages (หน้าวิกิ)</div>
+                <div class="real-stab">Source text (ข้อความที่สกัด)</div>
+                <div class="real-stab">Uploaded files (ไฟล์ต้นฉบับ)</div>
+              </div>
+              <span style="font-size:11px; color:var(--text-muted);">แสดง 4 หมวดหมู่ · 18 หน้าวิกิ</span>
+            </div>
+
+            <div class="real-fb-split">
+              <div class="real-fb-tree" id="slideFbTree">
+                <div style="font-size:10.5px; font-weight:700; color:var(--text-muted); padding:3px 6px;">FOLDERS</div>
+                <div class="real-fb-item active" data-fb-doc="proj-cloud">projects/cloud-erp-2026.md</div>
+                <div class="real-fb-item" data-fb-doc="ent-bank">clients/scb-enterprise.md</div>
+                <div class="real-fb-item" data-fb-doc="concept-sec">solutions/zero-trust-arch.md</div>
+                <div class="real-fb-item" data-fb-doc="syn-price">syntheses/boq-pricing-bench.md</div>
+              </div>
+              <div class="real-fb-viewer">
+                <div class="real-fb-viewer-bar">
+                  <span id="slideFbFilename">projects/cloud-erp-2026.md</span>
+                  <div style="display:flex; gap:6px;">
+                    <span style="font-size:10.5px; color:var(--text-secondary); background:rgba(255,255,255,0.06); padding:2px 8px; border-radius:99px;">Properties: 5 fields</span>
+                  </div>
+                </div>
+                <div class="real-fb-viewer-body" id="slideFbBody">
+                  <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-muted); background:var(--surface-2); padding:6px 10px; border-radius:7px; margin-bottom:8px;">
+                    type: project · client: [[clients/scb-enterprise]] · updated: 2026-11-06 · sources: 3 files
+                  </div>
+                  <h3 style="font-size:14.5px; font-weight:700; margin-bottom:6px;">โครงการพัฒนาแพลตฟอร์ม Cloud ERP และ Data Lakehouse</h3>
+                  <p style="margin-bottom:6px;">โครงการยกระดับระบบฐานข้อมูลหลักขององค์กรสู่สถาปัตยกรรม Hybrid Cloud รองรับผู้ใช้งานพร้อมกันกว่า 15,000 ราย โดยมีเกณฑ์ SLA ความพร้อมใช้งานที่ <strong>99.95%</strong> [1]</p>
+                  <p style="color:var(--text-secondary);">เชื่อมโยงกับมาตรฐาน <span style="color:#93C5FD; text-decoration:underline; cursor:pointer;">[[solutions/zero-trust-arch]]</span> และอ้างอิงตารางราคาใน <span style="color:#93C5FD; text-decoration:underline; cursor:pointer;">[[syntheses/boq-pricing-bench]]</span> [2]</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SCENE 05 : 1:1 LIVE DEMO OF "CHAT WITH PIKA" (#page-report from presale-wiki2)
+         ====================================================================== -->
+    <section class="apple-scene" id="scene-5" data-scene-idx="5">
+      <div class="apple-col-left" style="width:64%; max-width:840px; gap:12px;">
+        <div class="reveal-item">
+          <div class="apple-eyebrow">โหมดค้นคว้าเชิงลึก — หน้า Chat &amp; Deep Search</div>
+          <h2 class="apple-section-headline">
+            <span class="headline-line">ถามตอบและวิเคราะห์ข้อมูลข้ามเอกสาร</span>
+            <span class="headline-line apple-gold-span">พร้อมแสดงขั้นตอนการคิดวิเคราะห์ทีละขั้น</span>
+          </h2>
+        </div>
+
+        <!-- 1:1 Authentic Pika Chat Window (#page-report) -->
+        <div class="pika-app-window reveal-item" id="slideChatApp" data-app-theme="dark">
+          <div class="pika-window-chrome">
+            <div class="chrome-dots">
+              <span class="chrome-dot red"></span>
+              <span class="chrome-dot yellow"></span>
+              <span class="chrome-dot green"></span>
+            </div>
+            <span class="chrome-window-title">Pika Wiki — Chat</span>
+          </div>
+
+          <div class="real-chat-shell">
+            <!-- Real Chat Top Bar -->
+            <div class="real-chat-topbar" style="height:38px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="real-chat-dot"></span>
+                <span style="font-size:12.5px; font-weight:600; color:var(--text-primary);" id="slideChatSessionTitle">New chat</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <button class="chrome-tab-btn" id="btnSlideNewChat" style="padding:2px 8px; font-size:11px;">+ New chat</button>
+              </div>
+            </div>
+
+            <!-- STATE 1: Real Welcome Screen with Lightning Bolt + 3 Bento Cards -->
+            <div class="real-chat-welcome" id="slideChatWelcome">
+              <div style="margin-bottom:3px;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="#38BDF8" stroke="#FFFFFF" stroke-width="0.8"/>
+                </svg>
+              </div>
+              <div style="font-size:11.5px; font-weight:600; color:var(--text-secondary); margin-bottom:2px;">Good afternoon, Admin</div>
+              <div style="font-size:17.5px; font-weight:700; color:var(--text-primary); letter-spacing:-0.02em; margin:1px 0 3px;">How Can I Assist You Today?</div>
+              <div style="font-size:11.5px; color:var(--text-muted); text-align:center; margin-bottom:8px;">ค้นหาข้อมูล สรุปสาระสำคัญของเอกสาร หรือเริ่มต้นแชทสอบถามคลังความรู้ได้ทันที</div>
+
+              <!-- Exact 3 Bento Boxes from presale-wiki2 -->
+              <div class="real-bento-grid">
+                <div class="real-bento-card" data-chat-prompt="สรุปภาพรวมโครงการ Cloud ERP 2026 และเงื่อนไข SLA สำคัญ" style="display:flex; flex-direction:column; justify-content:space-between; min-height:120px; padding:10px 13px;">
+                  <div>
+                    <div class="real-bento-icon" style="width:24px; height:24px; margin-bottom:5px;">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                    </div>
+                    <div style="font-size:13px; font-weight:600; color:var(--text-primary); margin-bottom:2px;">Chat with Pika</div>
+                    <div style="font-size:10.5px; color:var(--text-muted); line-height:1.38;">ถาม-ตอบ สรุปข้อมูลโครงการ วิเคราะห์เงื่อนไข และสืบค้นคำตอบจากคลังความรู้ส่วนกลาง</div>
+                  </div>
+                  <span style="display:inline-block; align-self:flex-start; margin-top:6px; padding:3px 11px; border-radius:999px; background:rgba(255,255,255,0.1); color:#fff; font-size:10px; font-weight:600;">Ask Pika</span>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:7px;">
+                  <div class="real-bento-card" data-chat-prompt="ช่วยสรุปสาระสำคัญ ขอบเขตงาน และกำหนดการสำคัญจากเอกสารล่าสุด" style="padding:7px 11px;">
+                    <div class="real-bento-icon" style="width:20px; height:20px; margin-bottom:3px;">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M9 13.5l2 2 4-4"/></svg>
+                    </div>
+                    <div style="font-size:12px; font-weight:600; color:var(--text-primary); margin-bottom:1px;">วิเคราะห์เงื่อนไข &amp; ข้อกำหนดเอกสาร</div>
+                    <div style="font-size:10px; color:var(--text-muted); line-height:1.32;">สกัดขอบเขตงาน เกณฑ์ประเมิน และกำหนดการสำคัญ</div>
+                  </div>
+
+                  <div class="real-bento-card" data-chat-prompt="เปรียบเทียบสเปกเทคนิค Cloud Data Platform และงบประมาณอ้างอิง" style="padding:7px 11px;">
+                    <div class="real-bento-icon" style="width:20px; height:20px; margin-bottom:3px;">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="6" rx="2"/><rect x="2" y="15" width="20" height="6" rx="2"/><path d="M12 9v6"/></svg>
+                    </div>
+                    <div style="font-size:12px; font-weight:600; color:var(--text-primary); margin-bottom:1px;">สืบค้น Solution &amp; สเปกอุปกรณ์</div>
+                    <div style="font-size:10px; color:var(--text-muted); line-height:1.32;">ค้นหาสถาปัตยกรรมระบบ Network, Server, Cloud และเคสจริง</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Real Pill Input Box with generous clearance -->
+              <div class="real-pill-bar" style="margin-top:8px; padding:3px 5px 3px 14px; height:38px;">
+                <input type="text" class="real-pill-input" id="slideWelcomeInput" placeholder="Ask Pika anything..." style="font-size:12px;" />
+                <button class="real-pill-send" id="btnSlideWelcomeSend" style="padding:4px 13px; font-size:11.5px;">Send</button>
+              </div>
+            </div>
+
+            <!-- STATE 2: Real Active Chat Conversation with Deep Search Trace -->
+            <div class="real-chat-convo" id="slideChatConvo">
+              <div class="real-chat-messages" id="slideChatMessages"></div>
+
+              <div class="real-composer-wrap" style="padding:6px 14px 8px;">
+                <div class="real-composer-card" style="padding:4px 8px; border-radius:12px;">
+                  <button class="real-deepsearch-pill active" id="btnToggleDeepPill" title="สลับโหมดค้นลึก" style="padding:2px 7px; font-size:10px;">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <span>Deep search: ON</span>
+                  </button>
+                  <input type="text" class="real-pill-input" id="slideConvoInput" placeholder="Ask away — Pika will find it..." style="font-size:12px;" />
+                  <button class="real-pill-send" id="btnSlideConvoSend" style="padding:4px 13px; font-size:11.5px;">Send</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SCENE 06 : 1:1 LIVE DEMO OF "UNLEARN PROVENANCE MAP" & "FAILOVER BANNER"
+         ====================================================================== -->
+    <section class="apple-scene" id="scene-6" data-scene-idx="6">
+      <div class="apple-col-right" style="width:64%; max-width:840px; gap:12px;">
+        <div class="reveal-item">
+          <div class="apple-eyebrow">ความเสถียรและการจัดการข้อมูล — Unlearn &amp; Auto-Failover</div>
+          <h2 class="apple-section-headline">
+            <span class="headline-line">ตรวจสอบผลกระทบก่อนถอนข้อมูลรายไฟล์</span>
+            <span class="headline-line apple-gradient-span">พร้อมสลับโมเดลสำรองอัตโนมัติ งานไม่สะดุด</span>
+          </h2>
+        </div>
+
+        <!-- 1:1 Authentic Unlearn Provenance Modal & Admin Banner Window -->
+        <div class="pika-app-window reveal-item" id="slideUnlearnApp" data-app-theme="dark">
+          <div class="pika-window-chrome">
+            <div class="chrome-dots">
+              <span class="chrome-dot red"></span>
+              <span class="chrome-dot yellow"></span>
+              <span class="chrome-dot green"></span>
+            </div>
+            <span class="chrome-window-title">Pika Wiki — Unlearn &amp; System Health</span>
+            <div class="chrome-clean-tabs">
+              <button class="chrome-tab-btn" id="btnTestFailover">จำลองสลับโมเดลสำรอง</button>
+              <button class="chrome-tab-btn active" id="btnRunUnlearnDemo">รัน Unlearn</button>
+            </div>
+          </div>
+
+          <div style="padding:14px 18px; display:flex; flex-direction:column; gap:10px;">
+            <!-- Real Failover Banner (#pika-banner-stack) - clean neutral glass surface -->
+            <div id="demoFailoverBanner" style="display:none; padding:9px 12px; border-radius:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.16); color:var(--text-primary); font-size:12px; align-items:center; justify-content:space-between;">
+              <div>
+                <strong>ระบบสลับโมเดลสำรองอัตโนมัติ (Failover Active):</strong> โมเดลหลักตอบสนองช้าเกินกำหนด ระบบสลับไปใช้โมเดลสำรองเรียบร้อยแล้ว งานค้นหาและแชททำงานต่อได้ทันที
+              </div>
+              <button class="chrome-tab-btn" id="btnCloseFailoverBanner" style="margin-left:8px;">รับทราบ</button>
+            </div>
+
+            <!-- Real Unlearn Modal Box (#raw-unlearn-modal from presale-wiki2) -->
+            <div style="background:var(--surface); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:16px 18px; box-shadow:0 12px 32px rgba(0,0,0,0.4);">
+              <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.08);">
+                <div style="font-size:14.5px; font-weight:700; color:var(--text-primary);">
+                  Unlearn — ตรวจสอบผลกระทบก่อนถอนความรู้ (Provenance Map)
+                </div>
+                <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-secondary); background:rgba(255,255,255,0.06); padding:3px 10px; border-radius:99px;">
+                  ไฟล์: TOR_Cloud_ERP_Draft_Old.pdf
+                </span>
+              </div>
+
+              <!-- Provenance Map Breakdown (Clean neutral titanium cards, no colored border + colored text clash) -->
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                <div style="background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:10px 12px;">
+                  <div style="font-size:11.5px; font-weight:700; color:var(--text-primary); margin-bottom:4px;">หน้าที่ต้องลบทิ้งทั้งหมด (1 หน้า — มีไฟล์นี้เป็นแหล่งเดียว)</div>
+                  <div style="font-family:var(--font-mono); font-size:11.5px; color:var(--text-secondary);">• projects/cloud-erp-draft-old.md</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:10px 12px;">
+                  <div style="font-size:11.5px; font-weight:700; color:var(--text-primary); margin-bottom:4px;">หน้าที่ AI จะเขียนใหม่โดยคงข้อมูลไฟล์อื่นไว้ (2 หน้า)</div>
+                  <div style="font-family:var(--font-mono); font-size:11.5px; color:var(--text-secondary);">• clients/scb-enterprise.md</div>
+                  <div style="font-family:var(--font-mono); font-size:11.5px; color:var(--text-secondary);">• syntheses/boq-pricing-bench.md</div>
+                </div>
+              </div>
+
+              <div style="margin-top:10px; font-size:11.5px; color:var(--text-secondary); font-weight:500;">
+                ข้อมูลที่สกัดมาจากไฟล์นี้จะถูกถอนออกจากคลังความรู้และฐานข้อมูลเวกเตอร์อย่างปลอดภัย
+              </div>
+
+              <div style="display:grid; grid-template-columns:1.2fr 0.8fr auto; gap:10px; align-items:end; margin-top:8px;">
+                <div>
+                  <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:3px;">Reason (recorded in the audit log)</label>
+                  <input type="text" class="real-premium-input" id="demoUnlearnReason" value="อัปเดตเป็นเอกสารฉบับสมบูรณ์แทนฉบับร่างเดิม" />
+                </div>
+                <div>
+                  <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:3px;">Type DELETE to confirm:</label>
+                  <input type="text" class="real-premium-input" id="demoUnlearnTyped" value="DELETE" style="font-family:var(--font-mono); font-weight:700; color:var(--text-primary);" />
+                </div>
+                <button class="real-upload-btn" id="btnConfirmUnlearnBox" style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.22); width:auto; padding:9px 18px;">
+                  Unlearn ทันที
+                </button>
+              </div>
+
+              <!-- Unlearn Progress & Status -->
+              <div id="demoUnlearnStatusBox" style="margin-top:10px; padding:8px 12px; border-radius:9px; background:var(--surface-2); font-size:11.5px; color:var(--text-secondary);">
+                พร้อมสาธิต: ระบบกำลังจำลองขั้นตอนการถอนข้อมูลออกจากหน้าวิกิและแผนผังความรู้อัตโนมัติ
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SCENE 07 : ECOSYSTEM & MULTI-TEAM PROJECTS (Mascot Right, Content Left)
+         ====================================================================== -->
+    <section class="apple-scene" id="scene-7" data-scene-idx="7">
+      <div class="apple-col-left" style="width:64%; max-width:840px; gap:12px;">
+        <div class="reveal-item">
+          <div class="apple-eyebrow">การทำงานร่วมกันและการเชื่อมต่อ — Projects &amp; MCP v2</div>
+          <h2 class="apple-section-headline">
+            <span class="headline-line">แยกพื้นที่ความรู้ตามโครงการอย่างเป็นสัดส่วน</span>
+            <span class="headline-line apple-gradient-span">พร้อมเชื่อมต่อเครื่องมือ AI ผ่าน MCP Server</span>
+          </h2>
+        </div>
+
+        <!-- 1:1 Authentic Projects Window (#page-projects) -->
+        <div class="pika-app-window reveal-item" id="slideProjectsApp" data-app-theme="dark">
+          <div class="pika-window-chrome">
+            <div class="chrome-dots">
+              <span class="chrome-dot red"></span>
+              <span class="chrome-dot yellow"></span>
+              <span class="chrome-dot green"></span>
+            </div>
+            <span class="chrome-window-title">Pika Wiki — Projects &amp; MCP Server v2</span>
+          </div>
+
+          <div style="padding:14px 18px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+              <div>
+                <div style="font-size:10px; color:var(--text-muted);">Pika WiKi</div>
+                <div style="font-size:18px; font-weight:700; color:var(--text-primary);">Projects &amp; MCP Server v2</div>
+                <div style="font-size:11.5px; color:var(--text-secondary);">Group knowledge by engagement and connect external AI tools via MCP v2.</div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="chrome-tab-btn" id="btnSimNewProject">+ New project</button>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;" id="slideProjectsGrid">
+              <div class="pro-card wiki-project-link" id="projCardEnterprise" data-id="mcp-v2-server" style="padding:12px 14px; background:var(--surface);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-secondary); font-weight:600;">presale-enterprise</span>
+                  <span style="font-size:10px; font-weight:600; background:rgba(255,255,255,0.08); color:var(--text-primary); padding:2px 8px; border-radius:99px;">OWNER</span>
+                </div>
+                <div class="pro-card-title project-name" style="font-size:13.5px;">คลังความรู้กลางระดับองค์กร</div>
+                <p class="pro-card-desc" style="font-size:11px; margin-bottom:6px;">รวบรวมเอกสารมาตรฐาน ข้อกำหนดระบบ และบทสรุปราคาอ้างอิงสำหรับทุกทีม</p>
+                <div style="font-size:10.5px; color:var(--text-muted);">42 หน้าวิกิ · สมาชิก 18 คน · เปิดเชื่อม MCP แล้ว</div>
+              </div>
+
+              <div class="pro-card wiki-project-link" id="projCardCloud" data-id="self-service-proj" style="padding:12px 14px; background:var(--surface);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-secondary); font-weight:600;">cloud-migration-2026</span>
+                  <span style="font-size:10px; font-weight:600; background:rgba(255,255,255,0.08); color:var(--text-primary); padding:2px 8px; border-radius:99px;">MEMBER</span>
+                </div>
+                <div class="pro-card-title project-name" style="font-size:13.5px;">โครงการ Cloud ERP &amp; Data Platform</div>
+                <p class="pro-card-desc" style="font-size:11px; margin-bottom:6px;">พื้นที่เฉพาะกิจสำหรับทีมเสนอราคา Cloud ERP พร้อมสิทธิ์ตรวจสอบเอกสารแยกรายทีม</p>
+                <div style="font-size:10.5px; color:var(--text-muted);">19 หน้าวิกิ · สมาชิก 7 คน · ค้นหาข้ามโครงการได้</div>
+              </div>
+            </div>
+
+            <!-- Live MCP v2 Tool Execution Stream -->
+            <div style="margin-top:10px; background:rgba(4,9,20,0.88); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:10px 12px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                <span style="font-family:var(--font-mono); font-size:11px; font-weight:600; color:var(--text-secondary);">LIVE MCP SERVER v2 — TOOL CALL CONSOLE (Claude / Cursor / VS Code)</span>
+                <span style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-primary);" id="demoMcpStatusLabel">สถานะ: เชื่อมต่อพร้อมใช้งาน</span>
+              </div>
+              <div class="real-ingest-log" id="demoMcpLogBox" style="max-height:86px; margin-top:0; border:none; padding:4px 0; background:transparent;">
+                <div class="real-log-line info">[MCP v2] พร้อมรับคำสั่งค้นหาและบันทึกหน้าวิกิจากเครื่องมือ AI ภายนอก...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SCENE 08 : ENGINEERING ROADMAP (8-Week Architecture Evolution)
+         ====================================================================== -->
+    <section class="apple-scene" id="scene-8" data-scene-idx="8">
+      <div class="apple-stage-grid">
+        <div class="apple-col-left">
+          <!-- Pika Mascot Actor Area -->
+        </div>
+
+        <div class="apple-col-right" style="width:64%; max-width:840px; gap:12px;">
+          <!-- Slide Header (Apple Section Headline) -->
+          <div class="reveal-item">
+            <div class="apple-eyebrow">แผนผังและวิวัฒนาการสถาปัตยกรรม — Engineering Roadmap</div>
+            <h2 class="apple-section-headline">
+              <span class="headline-line">เส้นทางการพัฒนาระบบตลอด 8 สัปดาห์</span>
+              <span class="headline-line apple-gradient-span">จากรากฐานคลังความรู้ สู่ระบบพร้อมใช้งานจริง</span>
+            </h2>
+          </div>
+
+          <!-- KPI Bar (Prominent Apple Pro Stat Cards with Interactive Deep-Dive) -->
+          <div class="timeline-kpi-bar reveal-item">
+            <div class="timeline-kpi-item" data-kpi-id="kpi-w8" role="button" tabindex="0" title="คลิกเพื่อดูสถาปัตยกรรมเชิงลึก: 8 สัปดาห์">
+              <div class="timeline-kpi-head">
+                <span class="timeline-kpi-badge">ITERATIONS</span>
+                <svg class="timeline-kpi-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <span class="timeline-kpi-val">8 สัปดาห์</span>
+              <span class="timeline-kpi-lbl">วงรอบการพัฒนาสถาปัตยกรรม</span>
+            </div>
+            <div class="timeline-kpi-item" data-kpi-id="kpi-5lane" role="button" tabindex="0" title="คลิกเพื่อดูสถาปัตยกรรมเชิงลึก: 5-Lane Engine">
+              <div class="timeline-kpi-head">
+                <span class="timeline-kpi-badge">PARALLEL OCR</span>
+                <svg class="timeline-kpi-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+              </div>
+              <span class="timeline-kpi-val">5-Lane Engine</span>
+              <span class="timeline-kpi-lbl">ระบบสกัดคู่ขนาน 5 ช่องทาง</span>
+            </div>
+            <div class="timeline-kpi-item" data-kpi-id="kpi-hybrid" role="button" tabindex="0" title="คลิกเพื่อดูสถาปัตยกรรมเชิงลึก: Hybrid + Graph">
+              <div class="timeline-kpi-head">
+                <span class="timeline-kpi-badge">HYBRID SEARCH</span>
+                <svg class="timeline-kpi-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </div>
+              <span class="timeline-kpi-val">Hybrid + Graph</span>
+              <span class="timeline-kpi-lbl">การสืบค้น 2 มิติ BM25 + Dense</span>
+            </div>
+            <div class="timeline-kpi-item" data-kpi-id="kpi-prod" role="button" tabindex="0" title="คลิกเพื่อดูสถาปัตยกรรมเชิงลึก: Production Ready">
+              <div class="timeline-kpi-head">
+                <span class="timeline-kpi-badge">ENTERPRISE</span>
+                <svg class="timeline-kpi-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <span class="timeline-kpi-val">Production Ready</span>
+              <span class="timeline-kpi-lbl">ความพร้อมใช้งานระดับองค์กร</span>
+            </div>
+          </div>
+
+          <!-- Week Navigation Pills -->
+          <div class="timeline-week-nav reveal-item" id="timelineWeekNav">
+            <button class="timeline-nav-pill active" data-week-tab="w1">W1: Foundation</button>
+            <button class="timeline-nav-pill" data-week-tab="w2">W2: Ingest &amp; OCR</button>
+            <button class="timeline-nav-pill" data-week-tab="w3">W3: Provenance</button>
+            <button class="timeline-nav-pill" data-week-tab="w45">W4-5: Resilience</button>
+            <button class="timeline-nav-pill" data-week-tab="w6">W6: Deep Search</button>
+            <button class="timeline-nav-pill" data-week-tab="w7">W7: Graph Link</button>
+            <button class="timeline-nav-pill" data-week-tab="w8">W8: Production</button>
+          </div>
+
+          <!-- Weekly Cards Container -->
+          <div class="timeline-cards-scroll reveal-item">
+            <!-- Week 1 -->
+            <div class="timeline-week-card wiki-project-link active-week-card" data-week-id="w1" data-id="timeline-w1">
+              <div class="timeline-card-head">
+                <div class="timeline-card-title-group">
+                  <span class="timeline-week-badge">WEEK 01</span>
+                  <span class="timeline-week-theme">วางโครงสร้างสถาปัตยกรรมความรู้และเอนจินกราฟ</span>
+                </div>
+                <div class="timeline-week-dates">15 ก.ย. – 21 ก.ย. 2026</div>
+              </div>
+              <div class="timeline-card-desc">
+                วางรากฐานระบบจัดการความรู้ระดับองค์กรและระบบควบคุมสิทธิ์ความปลอดภัย
+              </div>
+              <div class="timeline-milestones-box">
+                <div class="timeline-milestone-item"><strong>Local Auth (PBKDF2):</strong> ระบบยืนยันตัวตนระดับองค์กร พร้อมการควบคุมสิทธิ์แบบแยกรายโปรเจกต์</div>
+                <div class="timeline-milestone-item"><strong>Cytoscape Cola Graph:</strong> เอนจินแสดงโครงข่ายความรู้แบบโต้ตอบด้วยฟิสิกส์ Force-Directed</div>
+                <div class="timeline-milestone-item"><strong>Frontmatter Schema &amp; Staging:</strong> วางมาตรฐาน Metadata Schema และระบบคัดกรองข้อมูลก่อนบันทึกวิกิ</div>
+              </div>
+              <div class="timeline-tags-row">
+                <span class="timeline-mini-tag">Cytoscape Cola</span>
+                <span class="timeline-mini-tag">Auth PBKDF2</span>
+                <span class="timeline-mini-tag">YAML Properties</span>
+                <span class="timeline-mini-tag">Staging Pipeline</span>
+              </div>
+            </div>
+
+            <!-- Week 2 -->
+            <div class="timeline-week-card wiki-project-link" data-week-id="w2" data-id="timeline-w2">
+              <div class="timeline-card-head">
+                <div class="timeline-card-title-group">
+                  <span class="timeline-week-badge">WEEK 02</span>
+                  <span class="timeline-week-theme">ระบบประมวลผลคู่ขนาน 5 ช่องทางและ Vision LLM OCR</span>
+                </div>
+                <div class="timeline-week-dates">22 ก.ย. – 28 ก.ย. 2026</div>
+              </div>
+              <div class="timeline-card-desc">
+                ยกระดับความเร็วในการสกัดข้อมูลและการแปลงไฟล์เอกสารสแกนความแม่นยำสูง
+              </div>
+              <div class="timeline-milestones-box">
+                <div class="timeline-milestone-item"><strong>5-Lane Parallel Ingestion:</strong> เอนจินนำเข้าข้อมูลพร้อมกัน 5 ช่องทาง รองรับเอกสารโครงการชุดใหญ่</div>
+                <div class="timeline-milestone-item"><strong>Vision LLM OCR Pipeline:</strong> สกัดข้อความและโครงสร้างตารางจากเอกสารสแกน PDF พร้อมระบบตรวจจับอัตโนมัติ</div>
+                <div class="timeline-milestone-item"><strong>HITL Review Plan:</strong> กระบวนการ Human-in-the-Loop ให้ตรวจทานความถูกต้องของ Entity ก่อนบันทึกเข้าคลัง</div>
+              </div>
+              <div class="timeline-tags-row">
+                <span class="timeline-mini-tag">5-Lane Ingest</span>
+                <span class="timeline-mini-tag">Vision LLM OCR</span>
+                <span class="timeline-mini-tag">Scanned PDF Engine</span>
+                <span class="timeline-mini-tag">HITL Review Plan</span>
+              </div>
+            </div>
+
+            <!-- Week 3 -->
+            <div class="timeline-week-card wiki-project-link" data-week-id="w3" data-id="timeline-w3">
+              <div class="timeline-card-head">
+                <div class="timeline-card-title-group">
+                  <span class="timeline-week-badge">WEEK 03</span>
+                  <span class="timeline-week-theme">ระบบตรวจสอบที่มาแบบเจาะจงบรรทัดและกราฟเชื่อมโยง</span>
+                </div>
+                <div class="timeline-week-dates">29 ก.ย. – 5 ต.ค. 2026</div>
+              </div>
+              <div class="timeline-card-desc">
+                สร้างความโปร่งใสในการตรวจสอบที่มาของข้อมูล และเอนจินถอนความรู้ที่ปลอดภัย
+              </div>
+              <div class="timeline-milestones-box">
+                <div class="timeline-milestone-item"><strong>Superscript Citation Engine:</strong> แสดงเลขอ้างอิงเชิงอรรถระบุไฟล์และบรรทัดที่มาอย่างชัดเจน</div>
+                <div class="timeline-milestone-item"><strong>Bulk Unlearn Provenance:</strong> ระบบคำนวณผลกระทบและถอนความรู้รายไฟล์ได้อย่างปลอดภัยไม่ทิ้งขยะตกค้าง</div>
+                <div class="timeline-milestone-item"><strong>Floating Nodes &amp; Master Index:</strong> ปรับการแสดงผลกราฟความรู้แบบลอยตัว พร้อมแคตตาล็อกดัชนีอัตโนมัติ</div>
+              </div>
+              <div class="timeline-tags-row">
+                <span class="timeline-mini-tag">Superscript Citations</span>
+                <span class="timeline-mini-tag">Bulk Unlearn</span>
+                <span class="timeline-mini-tag">Provenance Tracking</span>
+                <span class="timeline-mini-tag">Master Index</span>
+              </div>
+            </div>
+
+            <!-- Week 4-5 -->
+            <div class="timeline-week-card wiki-project-link" data-week-id="w45" data-id="timeline-w45">
+              <div class="timeline-card-head">
+                <div class="timeline-card-title-group">
+                  <span class="timeline-week-badge">WEEK 04–05</span>
+                  <span class="timeline-week-theme">เสถียรภาพระบบระดับองค์กรและการป้องกันความเสี่ยง</span>
+                </div>
+                <div class="timeline-week-dates">6 ต.ค. – 19 ต.ค. 2026</div>
+              </div>
+              <div class="timeline-card-desc">
+                เสริมสร้างเสถียรภาพและกลไกป้องกันความผิดพลาดสำหรับสภาพแวดล้อม Production
+              </div>
+              <div class="timeline-milestones-box">
+                <div class="timeline-milestone-item"><strong>Data Loss Guard &amp; Auto-Failover:</strong> ระบบสลับโมเดลสำรองอัตโนมัติ ป้องกันการสะดุดเมื่อ API มีปัญหา</div>
+                <div class="timeline-milestone-item"><strong>Quota &amp; Concurrency Hardening:</strong> ปรับจูน Rate Limiting และจัดสรรโควตาให้รองรับการทำงานต่อเนื่อง</div>
+                <div class="timeline-milestone-item"><strong>Stress Testing Benchmark:</strong> ทดสอบโหลดเอกสาร TOR ขนาดใหญ่ เพื่อควบคุมความแม่นยำและเวลาตอบสนอง</div>
+              </div>
+              <div class="timeline-tags-row">
+                <span class="timeline-mini-tag">Data Loss Guard</span>
+                <span class="timeline-mini-tag">Auto-Failover</span>
+                <span class="timeline-mini-tag">Quota Resilience</span>
+                <span class="timeline-mini-tag">Stress Testing</span>
+              </div>
+            </div>
+
+            <!-- Week 6 -->
+            <div class="timeline-week-card wiki-project-link" data-week-id="w6" data-id="timeline-w6">
+              <div class="timeline-card-head">
+                <div class="timeline-card-title-group">
+                  <span class="timeline-week-badge">WEEK 06</span>
+                  <span class="timeline-week-theme">โหมดค้นหาเชิงลึกและกระบวนการคิดวิเคราะห์หลายขั้นตอน</span>
+                </div>
+                <div class="timeline-week-dates">20 ต.ค. – 26 ต.ค. 2026</div>
+              </div>
+              <div class="timeline-card-desc">
+                พัฒนาระบบสืบค้นอัจฉริยะและการแสดงผลขั้นตอนการให้เหตุผลของ AI
+              </div>
+              <div class="timeline-milestones-box">
+                <div class="timeline-milestone-item"><strong>Deep Search &amp; Thought Chain:</strong> แสดงขั้นตอนกระบวนการคิดวิเคราะห์ทีละระดับก่อนสรุปคำตอบ</div>
+                <div class="timeline-milestone-item"><strong>Hybrid Retrieval Engine:</strong> ผสานการค้นหาคำเฉพาะ (BM25) ร่วมกับความหมายเชิงลึก (Dense Vector)</div>
+                <div class="timeline-milestone-item"><strong>Context-Aware Prompt Routing:</strong> คัดแยกแนวคำถามสำหรับโครงการทั่วไป วิเคราะห์เงื่อนไข TOR และค้นสเปกอัตโนมัติ</div>
+              </div>
+              <div class="timeline-tags-row">
+                <span class="timeline-mini-tag">Deep Search Engine</span>
+                <span class="timeline-mini-tag">Thought Chain</span>
+                <span class="timeline-mini-tag">Hybrid Retrieval</span>
+                <span class="timeline-mini-tag">Context Routing</span>
+              </div>
+            </div>
+
+            <!-- Week 7 -->
+            <div class="timeline-week-card wiki-project-link" data-week-id="w7" data-id="timeline-w7">
+              <div class="timeline-card-head">
+                <div class="timeline-card-title-group">
+                  <span class="timeline-week-badge">WEEK 07</span>
+                  <span class="timeline-week-theme">การเชื่อมโยงความรู้ข้ามมิติและการจำลองเชิงพื้นที่</span>
+                </div>
+                <div class="timeline-week-dates">27 ต.ค. – 2 พ.ย. 2026</div>
+              </div>
+              <div class="timeline-card-desc">
+                ระบบเสริมความสมบูรณ์ของความรู้และโครงข่ายความสัมพันธ์อัตโนมัติ
+              </div>
+              <div class="timeline-milestones-box">
+                <div class="timeline-milestone-item"><strong>Automated Graph Enrichment (relate.py):</strong> เชื่อมโยงเส้นทางความสัมพันธ์ระหว่างโครงการและเทคโนโลยีด้วย LLM</div>
+                <div class="timeline-milestone-item"><strong>Citation Self-Healing Pass:</strong> ซ่อมแซมและตรวจสอบความสมบูรณ์ของลิงก์อ้างอิงให้แม่นยำ 100%</div>
+                <div class="timeline-milestone-item"><strong>Interactive Spatial Actor Engine:</strong> ผสาน 3D Kinematics Actor สำหรับชี้ตำแหน่งและนำเสนอจุดสำคัญบนเวที</div>
+              </div>
+              <div class="timeline-tags-row">
+                <span class="timeline-mini-tag">Graph Enrichment</span>
+                <span class="timeline-mini-tag">Citation Self-Healing</span>
+                <span class="timeline-mini-tag">Spatial Actor Engine</span>
+                <span class="timeline-mini-tag">Project Switcher</span>
+              </div>
+            </div>
+
+            <!-- Week 8 -->
+            <div class="timeline-week-card wiki-project-link" data-week-id="w8" data-id="timeline-w8">
+              <div class="timeline-card-head">
+                <div class="timeline-card-title-group">
+                  <span class="timeline-week-badge">WEEK 08</span>
+                  <span class="timeline-week-theme">สถาปัตยกรรมแบบแยกเซสชันและการเชื่อมต่อภายนอก (MCP v2)</span>
+                </div>
+                <div class="timeline-week-dates">3 พ.ย. – 9 พ.ย. 2026</div>
+              </div>
+              <div class="timeline-card-desc">
+                ความสมบูรณ์แบบระดับ Production และการเปิดรับการเชื่อมต่อกับระบบ AI ภายนอก
+              </div>
+              <div class="timeline-milestones-box">
+                <div class="timeline-milestone-item"><strong>Tab-Isolated Session Architecture:</strong> แยกสถานะการทำงานอิสระรายแท็บเบราว์เซอร์ ป้องกัน State Collision</div>
+                <div class="timeline-milestone-item"><strong>Fast Inline Streaming &amp; Handoff:</strong> ถามเร็วตอบเร็วบนหน้าหลัก พร้อมกลไกส่งต่อบริบทไปยังห้องแชทโดยตรง</div>
+                <div class="timeline-milestone-item"><strong>Model Context Protocol (MCP v2):</strong> เปิดให้ Claude Desktop, Cursor และ VS Code เชื่อมต่อดึงข้อมูลวิกิได้ทันที</div>
+              </div>
+              <div class="timeline-tags-row">
+                <span class="timeline-mini-tag">MCP Server v2</span>
+                <span class="timeline-mini-tag">Tab-Isolated State</span>
+                <span class="timeline-mini-tag">Streaming Handoff</span>
+                <span class="timeline-mini-tag">Multi-Tenant Projects</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SCENE 09 : GRAND FINALE (4 Interactive Apple Bento Showcase Modules)
+         ====================================================================== -->
+    <section class="apple-scene" id="scene-9" data-scene-idx="9">
+      <div class="hero-scene-shell">
+        <div class="apple-hero-center reveal-item">
+          <h2 class="apple-hero-title">Pika Wiki</h2>
+          <div class="apple-hero-xdr">พร้อมยกระดับการทำงานของทุกทีมในองค์กรแล้ววันนี้</div>
+          <p class="apple-hero-sub">
+            รวมความเร็วในการสกัดข้อมูล ความแม่นยำในการค้นหา และความเสถียรระดับองค์กร<br/>
+            เพื่อให้ทุกการจัดการและเข้าถึงความรู้ของทีม รวดเร็วและแม่นยำกว่าที่เคย
+          </p>
+          <div class="apple-cta-row">
+            <button class="btn-apple-solid" data-open-workbench="report">เปิดหน้าแอป Live Demo เต็มรูปแบบ</button>
+            <button class="btn-apple-outline" data-goto="1">กลับไปหน้าแรก</button>
+          </div>
+        </div>
+
+        <div class="hero-wing-grid reveal-item">
+          <!-- LEFT WING: 2 Bento Modules -->
+          <div class="hero-wing-col">
+            <div class="bento-card finale-bento-card bento-tilt-card bento-float-1 wiki-project-link" data-id="finale-stat-5x">
+              <div class="bento-card-top">
+                <div class="bento-icon-box">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </div>
+                <span class="bento-tag-mono">01 · PARALLEL INGESTION</span>
+                <span class="bento-pill-metric">3.8s / 5 ไฟล์</span>
+                <button type="button" class="bento-circle-arrow white-circle" data-open-workbench="analyze" title="เปิดหน้าอัปโหลดเอกสาร">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+                </button>
+              </div>
+              <div class="bento-main-row">
+                <span class="bento-stat-value">5x</span>
+                <div class="bento-title-group">
+                  <div class="pro-card-title project-name">สกัดและสร้างหน้าวิกิเร็วขึ้น 5 เท่า</div>
+                  <p class="pro-card-desc">ประมวลผลเอกสารชุดใหญ่พร้อมกัน 5 ช่องทาง เปลี่ยนไฟล์ดิบเป็นวิกิได้ในไม่กี่วินาที</p>
+                </div>
+              </div>
+              <div class="bento-visual-strip">
+                <div class="bento-lane-row">
+                  <span class="bento-lane-label">W1–W5</span>
+                  <div class="bento-lane-bars">
+                    <span class="bento-lane-bar" style="width:96%;"></span>
+                    <span class="bento-lane-bar" style="width:88%;"></span>
+                    <span class="bento-lane-bar" style="width:94%;"></span>
+                    <span class="bento-lane-bar" style="width:90%;"></span>
+                    <span class="bento-lane-bar" style="width:100%;"></span>
+                  </div>
+                  <span class="bento-lane-status">100% READY</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="bento-card finale-bento-card bento-tilt-card bento-float-2 wiki-project-link" data-id="finale-stat-hybrid">
+              <div class="bento-card-top">
+                <div class="bento-icon-box">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="12" cy="18" r="3"/><line x1="8.5" y1="7.5" x2="10.5" y2="15.5"/><line x1="15.5" y1="7.5" x2="13.5" y2="15.5"/><line x1="9" y1="6" x2="15" y2="6"/></svg>
+                </div>
+                <span class="bento-tag-mono">02 · HYBRID + GRAPH</span>
+                <span class="bento-pill-metric">Qdrant + Links</span>
+                <button type="button" class="bento-circle-arrow white-circle" data-open-workbench="graph" title="เปิดหน้าแผนผังความรู้">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+                </button>
+              </div>
+              <div class="bento-main-row">
+                <span class="bento-stat-value">2 มิติ</span>
+                <div class="bento-title-group">
+                  <div class="pro-card-title project-name">ค้นหาแม่นยำพร้อมแผนผังความรู้</div>
+                  <p class="pro-card-desc">ผสานการค้นหาคำศัพท์เฉพาะทางและบริบทความหมาย พร้อมเชื่อมโยงข้ามโครงการ</p>
+                </div>
+              </div>
+              <div class="bento-visual-strip">
+                <div class="bento-flow-pills">
+                  <span class="bento-flow-node">คำค้นเฉพาะ (BM25)</span>
+                  <span class="bento-flow-sep">+</span>
+                  <span class="bento-flow-node">ความหมาย (Dense)</span>
+                  <span class="bento-flow-sep">→</span>
+                  <span class="bento-flow-node active">Graph Links</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CENTER MASCOT SPACER: 360px for 3D Pika -->
+          <div class="mascot-stage-anchor" aria-hidden="true"></div>
+
+          <!-- RIGHT WING: 2 Bento Modules -->
+          <div class="hero-wing-col">
+            <div class="bento-card finale-bento-card bento-tilt-card bento-float-3 wiki-project-link" data-id="finale-stat-failover">
+              <div class="bento-card-top">
+                <div class="bento-icon-box">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                </div>
+                <span class="bento-tag-mono">03 · TRUST &amp; SAFETY</span>
+                <span class="bento-pill-metric">Audit Verified</span>
+                <button type="button" class="bento-circle-arrow white-circle" data-open-workbench="history" title="เปิดหน้าตรวจสอบที่มา">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+                </button>
+              </div>
+              <div class="bento-main-row">
+                <span class="bento-stat-value">100%</span>
+                <div class="bento-title-group">
+                  <div class="pro-card-title project-name">เสถียรและตรวจสอบที่มาได้ทุกบรรทัด</div>
+                  <p class="pro-card-desc">ระบุไฟล์อ้างอิงชัดเจน ถอนข้อมูลรายไฟล์ได้ปลอดภัย และสลับระบบสำรองอัตโนมัติ</p>
+                </div>
+              </div>
+              <div class="bento-visual-strip">
+                <div class="bento-flow-pills">
+                  <span class="bento-flow-node active">Citation [1] [2]</span>
+                  <span class="bento-flow-sep">·</span>
+                  <span class="bento-flow-node">Surgical Unlearn</span>
+                  <span class="bento-flow-sep">·</span>
+                  <span class="bento-flow-node">Auto-Failover</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="bento-card finale-bento-card bento-tilt-card bento-float-4 wiki-project-link" data-id="finale-stat-mcp">
+              <div class="bento-card-top">
+                <div class="bento-icon-box">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <span class="bento-tag-mono">04 · ECOSYSTEM</span>
+                <span class="bento-pill-metric">13 MCP Tools</span>
+                <button type="button" class="bento-circle-arrow white-circle" data-open-workbench="projects" title="เปิดหน้าโครงการและการเชื่อมต่อ MCP">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+                </button>
+              </div>
+              <div class="bento-main-row">
+                <span class="bento-stat-value">MCP v2</span>
+                <div class="bento-title-group">
+                  <div class="pro-card-title project-name">เชื่อมต่อได้ทุกสภาพแวดล้อมการทำงาน</div>
+                  <p class="pro-card-desc">แยกสิทธิ์รายโครงการชัดเจน พร้อมเชื่อมต่อกับ Claude, Cursor และ VS Code ทันที</p>
+                </div>
+              </div>
+              <div class="bento-visual-strip">
+                <div class="bento-flow-pills">
+                  <span class="bento-flow-node active">Pika Web</span>
+                  <span class="bento-flow-sep">↔</span>
+                  <span class="bento-flow-node">Claude Desktop</span>
+                  <span class="bento-flow-sep">↔</span>
+                  <span class="bento-flow-node">VS Code / Cursor</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SIMULATED GHOST CURSOR FOR AUTOMATIC LIVE DEMOS ON SLIDE ENTRY -->
+  <div id="demoGhostCursor" aria-hidden="true">
+    <div class="ghost-ripple"></div>
+    <svg class="ghost-arrow" viewBox="0 0 24 24" fill="none">
+      <path d="M4 2L20 11.5L12.5 13.5L9 21L4 2Z" fill="#38BDF8" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <span class="ghost-label" id="demoGhostLabel">กำลังจำลองการใช้งานจริง</span>
+  </div>
+
+  <!-- ========================================================================
+       4B. TECHNICAL ARCHITECTURE DEEP-DIVE MODAL (#kpiTechModal)
+       Quiet Luxury Executive Spec Sheet for the 4 Engineering Pillars
+       ======================================================================== -->
+  <div class="kpi-tech-overlay" id="kpiTechModal" style="display: none;">
+    <div class="kpi-tech-backdrop" id="kpiTechBackdrop"></div>
+    <div class="kpi-tech-dialog" role="dialog" aria-modal="true" aria-labelledby="kpiModalTitle">
+      <div class="kpi-tech-header">
+        <div class="kpi-tech-header-left">
+          <div class="kpi-tech-eyebrow" id="kpiModalEyebrow">ARCHITECTURE SPECIFICATION</div>
+          <h3 class="kpi-tech-title" id="kpiModalTitle">Architecture Deep Dive</h3>
+          <p class="kpi-tech-subtitle" id="kpiModalSubtitle">คำอธิบายรายละเอียดทางเทคนิค</p>
+        </div>
+        <button type="button" class="kpi-tech-close-btn" id="btnKpiModalClose" title="ปิดหน้าต่าง (ESC)">✕</button>
+      </div>
+
+      <div class="kpi-tech-body">
+        <!-- Tech Stack Badges -->
+        <div class="kpi-tech-section">
+          <div class="kpi-tech-section-title">สถาปัตยกรรมและเทคโนโลยีที่ใช้ (Tech Stack &amp; Architecture)</div>
+          <div class="kpi-tech-badges-grid" id="kpiModalBadges">
+            <!-- Dynamic Badges -->
+          </div>
+        </div>
+
+        <!-- Engineering Mechanisms -->
+        <div class="kpi-tech-section">
+          <div class="kpi-tech-section-title">กลไกการทำงานเชิงลึก (Implementation &amp; Mechanisms)</div>
+          <div class="kpi-tech-points" id="kpiModalPoints">
+            <!-- Dynamic Points -->
+          </div>
+        </div>
+
+        <!-- Technical Impact & Benchmarks -->
+        <div class="kpi-tech-section">
+          <div class="kpi-tech-section-title">ผลลัพธ์และ Benchmark ทางเทคนิค (Measured Impact)</div>
+          <div class="kpi-tech-benchmarks" id="kpiModalBenchmarks">
+            <!-- Dynamic Benchmarks -->
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-tech-footer">
+        <span class="kpi-tech-footer-hint">กด ESC หรือคลิกพื้นที่ภายนอกเพื่อปิด</span>
+        <button type="button" class="kpi-tech-footer-btn" id="btnKpiModalFooterClose">ปิดหน้าต่าง</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       5. FULL-SCREEN 1:1 INTERACTIVE PIKA WIKI WORKBENCH MODAL (#liveDemoModal)
+       Exact Sidebar + Upload Note + Chat + File Browser + Graph + Projects
+       ======================================================================== -->
+  <div class="live-workbench-overlay" id="liveDemoModal">
+    <div class="pika-app-window live-workbench-frame" id="workbenchAppWindow" data-app-theme="dark">
+
+      <!-- EXACT FLOATING LUXURY SIDEBAR FROM presale-wiki2/static/index.html -->
+      <aside class="real-floating-sidebar">
+        <div class="real-sb-logo">
+          <div class="real-sb-logo-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+          </div>
+          <span style="font-size:15px; font-weight:700; color:var(--text-primary);">Pika <span style="color:#38BDF8; font-weight:400;">Wiki</span></span>
+        </div>
+
+        <nav class="real-sb-nav">
+          <div class="real-sb-item" data-wb-tab="analyze">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span>Upload Note</span>
+          </div>
+          <div class="real-sb-item active" data-wb-tab="report">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg>
+            <span>Chat</span>
+          </div>
+          <div class="real-sb-item" data-wb-tab="history">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 14 1.45-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H18a2 2 0 0 1 2 2v2"/></svg>
+            <span>File Browser</span>
+          </div>
+          <div class="real-sb-item" data-wb-tab="unlearn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="4" y1="20" x2="20" y2="4"/></svg>
+            <span>Unlearn (Provenance)</span>
+          </div>
+          <div class="real-sb-item" data-wb-tab="projects">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <span>Projects</span>
+          </div>
+        </nav>
+
+        <!-- Sessions panel inside Sidebar -->
+        <div style="padding:10px; border-top:1px solid var(--border-light); flex:1; overflow-y:auto;">
+          <div style="font-size:9.5px; font-weight:700; color:var(--text-muted); letter-spacing:0.08em; margin-bottom:6px;">RECENT CHATS</div>
+          <div class="real-sb-item" data-wb-chat-q="สรุปภาพรวมโครงการ Cloud ERP 2026 และเงื่อนไข SLA สำคัญ" style="font-size:11.5px; padding:5px 8px;">• วิเคราะห์เงื่อนไข Cloud ERP</div>
+          <div class="real-sb-item" data-wb-chat-q="เปรียบเทียบสเปกเทคนิค Cloud Data Platform และงบประมาณอ้างอิง" style="font-size:11.5px; padding:5px 8px;">• สเปก Cloud & BOQ</div>
+          <div class="real-sb-item" data-wb-chat-q="มีข้อกำหนดหรือความเสี่ยงสำคัญอะไรในสัญญาที่ต้องระวังบ้าง" style="font-size:11.5px; padding:5px 8px;">• ความเสี่ยงและค่าปรับ SLA</div>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div style="padding:10px; border-top:1px solid var(--border-light); display:flex; align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div style="width:28px; height:28px; border-radius:50%; background:#2563EB; color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">A</div>
+            <div>
+              <div style="font-size:12px; font-weight:600; color:var(--text-primary);">Admin</div>
+              <div style="font-size:9.5px; color:#38BDF8; font-weight:700;">ADMIN</div>
+            </div>
+          </div>
+          <button class="chrome-mini-btn" data-toggle-app-theme="workbenchAppWindow">Theme</button>
+        </div>
+      </aside>
+
+      <!-- MAIN WORKBENCH CONTENT AREA -->
+      <div class="real-main-pane">
+        <div class="pika-window-chrome" style="height:42px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:12.5px; font-weight:700; color:#38BDF8;">LIVE INTERACTIVE WORKBENCH</span>
+            <span class="chrome-url-pill" id="wbBreadcrumb">Pika Wiki / Chat (#report)</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button class="chrome-mini-btn" id="btnCloseLiveDemo" style="background:rgba(239,68,68,0.18); border-color:rgba(248,113,113,0.4); color:#FCA5A5; padding:4px 14px;">ปิดหน้าต่าง Live Demo (กลับสู่สไลด์)</button>
+          </div>
+        </div>
+
+        <div id="wbDynamicStage" style="flex:1; overflow-y:auto; padding:18px 24px;">
+          <!-- Populated dynamically by keynote.js so user can interact with every tab in full size -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       6. SCRIPTS: THREE.JS + EXACT UNMODIFIED PIKA_MASCOT.JS + KEYNOTE.JS
+       ======================================================================== -->
+  <script src="static/three.min.js"></script>
+  <script src="static/pika_mascot.js"></script>
+  <script src="static/keynote.js"></script>
+</body>
+</html>

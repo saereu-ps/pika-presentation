@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIKA Development Timeline | Weekly Engineering Roadmap</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-body: 'IBM Plex Sans Thai', sans-serif;
+      --font-condensed: 'Barlow Condensed', 'IBM Plex Sans Thai', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      --bg-page: #060B18;
+      --bg-surface: #111A2E;
+      --bg-card: #182234;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-card: rgba(148, 163, 184, 0.16);
+
+      --color-week1: #3B82F6;
+      --color-week1-bg: rgba(59, 130, 246, 0.12);
+      --color-week1-border: rgba(59, 130, 246, 0.40);
+
+      --color-week2: #A855F7;
+      --color-week2-bg: rgba(168, 85, 247, 0.12);
+      --color-week2-border: rgba(168, 85, 247, 0.40);
+
+      --color-week3: #38BDF8;
+      --color-week3-bg: rgba(56, 189, 248, 0.12);
+      --color-week3-border: rgba(56, 189, 248, 0.40);
+
+      --color-week4: #10B981;
+      --color-week4-bg: rgba(16, 185, 129, 0.12);
+      --color-week4-border: rgba(16, 185, 129, 0.40);
+
+      --bento-primary: #1E40AF;
+      --bento-sky: #DBEAFE;
+      --bento-slate: #E2E8F0;
+      --bento-dark: #1E293B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-page);
+      background-image:
+        radial-gradient(circle 900px at 15% 10%, rgba(30, 64, 175, 0.22) 0%, transparent 65%),
+        radial-gradient(circle 800px at 85% 85%, rgba(168, 85, 247, 0.14) 0%, transparent 60%);
+      background-attachment: fixed;
+      color: #F1F5F9;
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Sticky Top Bar ── */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(6, 11, 24, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-logo {
+      font-family: var(--font-condensed);
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: #FFFFFF;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-logo span {
+      color: #38BDF8;
+    }
+
+    .brand-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.15);
+      color: #38BDF8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .top-nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-nav-deck {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      border-radius: 9999px;
+      background: #1E40AF;
+      border: 1px solid #3B82F6;
+      color: #FFFFFF;
+      font-size: 12.5px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.18s ease;
+    }
+
+    .btn-nav-deck:hover {
+      background: #2563EB;
+      transform: translateY(-1px);
+    }
+
+    /* ── Main Container ── */
+    .timeline-container {
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 36px 32px 100px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+
+    /* ── Header Section ── */
+    .header-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .header-main-title {
+      font-family: var(--font-condensed);
+      font-size: 40px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: #FFFFFF;
+      line-height: 1.15;
+    }
+
+    .header-subtitle {
+      font-size: 15.5px;
+      color: #94A3B8;
+      line-height: 1.6;
+      max-width: 900px;
+    }
+
+    /* ── 4 Weekly Overview Bento Cards ── */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 1100px) {
+      .overview-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .overview-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .weekly-bento-card {
+      border-radius: 18px;
+      padding: 20px 22px;
+      border: 1px solid var(--border-card);
+      background: rgba(17, 26, 46, 0.75);
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .weekly-bento-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    }
+
+    .card-week1 {
+      border-color: var(--color-week1-border);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(17, 26, 46, 0.85) 100%);
+    }
+
+    .card-week2 {
+      border-color: var(--color-week2-border);
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(17, 26, 46, 0.85) 100%);
+    }
+
+    .card-week3 {
+      border-color: var(--color-week3-border);
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(17, 26, 46, 0.85) 100%);
+    }
+
+    .card-week4 {
+      border-color: var(--color-week4-border);
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(17, 26, 46, 0.85) 100%);
+    }
+
+    .weekly-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .weekly-card-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .weekly-avatar-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+      font-family: var(--font-mono);
+      flex-shrink: 0;
+    }
+
+    .avatar-week1 { background: #2563EB; color: #FFFFFF; }
+    .avatar-week2 { background: #9333EA; color: #FFFFFF; }
+    .avatar-week3 { background: #0284C7; color: #FFFFFF; }
+    .avatar-week4 { background: #059669; color: #FFFFFF; }
+
+    .weekly-card-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #FFFFFF;
+      font-family: var(--font-condensed);
+      letter-spacing: 0.03em;
+    }
+
+    .weekly-card-dates {
+      font-size: 11px;
+      color: #94A3B8;
+    }
+
+    .weekly-status-tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 9999px;
+      font-family: var(--font-mono);
+      white-space: nowrap;
+    }
+
+    .tag-week1 { background: var(--color-week1-bg); color: var(--color-week1); border: 1px solid var(--color-week1-border); }
+    .tag-week2 { background: var(--color-week2-bg); color: var(--color-week2); border: 1px solid var(--color-week2-border); }
+    .tag-week3 { background: var(--color-week3-bg); color: var(--color-week3); border: 1px solid var(--color-week3-border); }
+    .tag-week4 { background: var(--color-week4-bg); color: var(--color-week4); border: 1px solid var(--color-week4-border); }
+
+    .weekly-card-desc {
+      font-size: 12px;
+      color: #CBD5E1;
+      line-height: 1.55;
+    }
+
+    .weekly-card-highlights {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: auto;
+    }
+
+    .weekly-pill {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #E2E8F0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-family: var(--font-mono);
+    }
+
+    /* ── Filter Bar ── */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px;
+      border-radius: 9999px;
+      background: rgba(17, 26, 46, 0.8);
+      border: 1px solid var(--border-card);
+      width: fit-content;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .filter-btn {
+      padding: 7px 18px;
+      border-radius: 9999px;
+      border: none;
+      background: transparent;
+      color: #94A3B8;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.18s ease;
+    }
+
+    .filter-btn:hover {
+      color: #FFFFFF;
+    }
+
+    .filter-btn.active {
+      background: #1E40AF;
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(30, 64, 175, 0.5);
+    }
+
+    /* ── Timeline Section ── */
+    .timeline-stream {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      padding-left: 28px;
+    }
+
+    .timeline-stream::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 15px;
+      bottom: 20px;
+      width: 2px;
+      background: linear-gradient(180deg, #3B82F6 0%, #A855F7 33%, #38BDF8 66%, #10B981 100%);
+      opacity: 0.4;
+    }
+
+    /* ── Week Block ── */
+    .timeline-week-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+    }
+
+    .week-section-node {
+      position: absolute;
+      left: -28px;
+      top: 6px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #060B18;
+      border: 3px solid #3B82F6;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+    }
+
+    .node-week1 { border-color: #3B82F6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.8); }
+    .node-week2 { border-color: #A855F7; box-shadow: 0 0 10px rgba(168, 85, 247, 0.8); }
+    .node-week3 { border-color: #38BDF8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.8); }
+    .node-week4 { border-color: #10B981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.8); }
+
+    .week-section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .week-section-title {
+      font-family: var(--font-condensed);
+      font-size: 26px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: 0.04em;
+    }
+
+    .week-section-badge {
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 3px 12px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #CBD5E1;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* ── Entry Bento Card ── */
+    .entry-card {
+      border-radius: 20px;
+      padding: 22px 24px;
+      background: rgba(17, 26, 46, 0.8);
+      border: 1px solid var(--border-card);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .entry-card:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .entry-top-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .entry-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .entry-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #FFFFFF;
+      line-height: 1.35;
+    }
+
+    .entry-why {
+      font-size: 13px;
+      color: #94A3B8;
+      line-height: 1.5;
+    }
+
+    .functional-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 11px;
+      border-radius: 9999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-family: var(--font-mono);
+      background: rgba(255, 255, 255, 0.08);
+      color: #E2E8F0;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .badge-blue { background: rgba(59, 130, 246, 0.15); color: #60A5FA; border-color: rgba(59, 130, 246, 0.35); }
+    .badge-purple { background: rgba(168, 85, 247, 0.15); color: #C084FC; border-color: rgba(168, 85, 247, 0.35); }
+    .badge-cyan { background: rgba(56, 189, 248, 0.15); color: #38BDF8; border-color: rgba(56, 189, 248, 0.35); }
+    .badge-green { background: rgba(16, 185, 129, 0.15); color: #34D399; border-color: rgba(16, 185, 129, 0.35); }
+
+    /* ── Commit / Details Table ── */
+    .details-box {
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .detail-row {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+
+    .detail-label {
+      width: 90px;
+      flex-shrink: 0;
+      font-family: var(--font-condensed);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #64748B;
+    }
+
+    .detail-content {
+      color: #E2E8F0;
+      flex: 1;
+    }
+
+    .commit-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: #93C5FD;
+      margin-right: 4px;
+      margin-bottom: 2px;
+    }
+
+    /* ── Feature Checklist ── */
+    .feature-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .feature-item {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      padding: 8px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .feature-head {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #F8FAFC;
+    }
+
+    .feature-sub {
+      font-size: 11.5px;
+      color: #94A3B8;
+      line-height: 1.4;
+    }
+
+    /* ── Metrics / Tech Badges ── */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .metric-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .metric-box {
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: rgba(30, 41, 59, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .metric-val {
+      font-family: var(--font-condensed);
+      font-size: 20px;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+
+    .metric-lbl {
+      font-size: 10.5px;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    /* ── Summary & Pending Section ── */
+    .pending-section {
+      border-radius: 20px;
+      padding: 24px 28px;
+      background: #111A2E;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .pending-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .pending-title {
+      font-family: var(--font-condensed);
+      font-size: 20px;
+      font-weight: 700;
+      color: #FBBF24;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .pending-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .pending-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .pending-item {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 10px;
+      padding: 10px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .pending-item-head {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #F8FAFC;
+    }
+
+    .pending-item-desc {
+      font-size: 11.5px;
+      color: #94A3B8;
+      line-height: 1.45;
+    }
+
+    /* ── Footer ── */
+    .timeline-footer {
+      text-align: center;
+      font-size: 12px;
+      color: #64748B;
+      padding: 20px 0;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="top-bar">
+    <div class="brand-wrap">
+      <a href="/index.html" class="brand-logo">
+        PIKA <span>WIKI</span>
+      </a>
+      <span class="brand-tag">Weekly Roadmap</span>
+    </div>
+    <div class="top-nav-actions">
+      <a href="/index.html" class="btn-nav-deck">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span>กลับหน้า Executive Deck</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="timeline-container">
+
+    <!-- Header Section -->
+    <section class="header-section">
+      <h1 class="header-main-title">บันทึกเส้นทางการพัฒนาระบบ PIKA WIKI รายสัปดาห์</h1>
+      <p class="header-subtitle">
+        สรุปความคืบหน้าเชิงวิศวกรรมตลอด 4 สัปดาห์ (กันยายน – ตุลาคม 2026) จัดหมวดหมู่ตามสัปดาห์การทำงานจริง จากการวางรากฐาน Ingest, ระบบรักษาความปลอดภัย Local Auth, ปัญญาประดิษฐ์ Vision OCR สู่สถาปัตยกรรมระดับองค์กรที่ใช้งานได้จริง
+      </p>
+
+      <!-- 4 Weekly Overview Bento Cards -->
+      <div class="overview-grid">
+        <!-- Week 1 -->
+        <div class="weekly-bento-card card-week1">
+          <div class="weekly-card-header">
+            <div class="weekly-card-profile">
+              <div class="weekly-avatar-circle avatar-week1">W1</div>
+              <div>
+                <div class="weekly-card-name">WEEK 01</div>
+                <div class="weekly-card-dates">1–7 ก.ย. 2026</div>
+              </div>
+            </div>
+            <span class="weekly-status-tag tag-week1">Ingest Core</span>
+          </div>
+          <div style="font-size: 13.5px; font-weight: 700; color: #FFFFFF;">วางรากฐาน Ingest &amp; ค้นหาระดับหน้า</div>
+          <p class="weekly-card-desc">
+            ปรับปรุง Page-level Vector Search (<code>_ensure_summary</code>) สกัดเวกเตอร์ระดับหน้าแยกชัดจาก Chunk, ดักจับคีย์ว่าง ป้องกันแจ้งเตือน VPN หลอก และทำ File Tree พับได้แบบ Obsidian
+          </p>
+          <div class="weekly-card-highlights">
+            <span class="weekly-pill">Page Vector Search</span>
+            <span class="weekly-pill">MissingAPIKey</span>
+            <span class="weekly-pill">Foldable Tree</span>
+            <span class="weekly-pill">_fbAttr Security</span>
+          </div>
+        </div>
+
+        <!-- Week 2 -->
+        <div class="weekly-bento-card card-week2">
+          <div class="weekly-card-header">
+            <div class="weekly-card-profile">
+              <div class="weekly-avatar-circle avatar-week2">W2</div>
+              <div>
+                <div class="weekly-card-name">WEEK 02</div>
+                <div class="weekly-card-dates">15–21 ก.ย. 2026</div>
+              </div>
+            </div>
+            <span class="weekly-status-tag tag-week2">Topology Graph</span>
+          </div>
+          <div style="font-size: 13.5px; font-weight: 700; color: #FFFFFF;">กราฟพลวัต (Cola Physics) &amp; Security</div>
+          <p class="weekly-card-desc">
+            กราฟฟิสิกส์มีชีวิต: เอนจิน Cytoscape Cola ลากโหนดแล้วความสัมพันธ์ไหลตามแบบ Obsidian, แผง YAML Frontmatter ดึง <code>[[wikilinks]]</code> ขึ้นหัวบทความ และโหมด Standalone Local Auth ปลอดภัย
+          </p>
+          <div class="weekly-card-highlights">
+            <span class="weekly-pill">Cola Physics กราฟไหลตาม</span>
+            <span class="weekly-pill">YAML Frontmatter</span>
+            <span class="weekly-pill">auth_local.py</span>
+            <span class="weekly-pill">Dev Bypass</span>
+          </div>
+        </div>
+
+        <!-- Week 3 -->
+        <div class="weekly-bento-card card-week3">
+          <div class="weekly-card-header">
+            <div class="weekly-card-profile">
+              <div class="weekly-avatar-circle avatar-week3">W3</div>
+              <div>
+                <div class="weekly-card-name">WEEK 03</div>
+                <div class="weekly-card-dates">22–30 ก.ย. 2026</div>
+              </div>
+            </div>
+            <span class="weekly-status-tag tag-week3">Fast Ingest &amp; Vision</span>
+          </div>
+          <div style="font-size: 13.5px; font-weight: 700; color: #FFFFFF;">จัดการเอกสารไวขึ้น &amp; Vision OCR</div>
+          <p class="weekly-card-desc">
+            อัปโหลดและประมวลผลคู่ขนานความเร็วสูง (<code>ingest_parallel.py</code>, Option 5), สกัด PDF สแกน 4 ระดับ ($0.0023/หน้า) และตรวจจับเฉพาะหน้าสแกน (Per-page scan) ข้อมูลไม่ตกหล่น
+          </p>
+          <div class="weekly-card-highlights">
+            <span class="weekly-pill">ประมวลผลเร็วขึ้น 5x</span>
+            <span class="weekly-pill">Vision OCR ($0.0023)</span>
+            <span class="weekly-pill">Per-page Scan</span>
+            <span class="weekly-pill">Parallel Pipeline</span>
+          </div>
+        </div>
+
+        <!-- Week 4 -->
+        <div class="weekly-bento-card card-week4">
+          <div class="weekly-card-header">
+            <div class="weekly-card-profile">
+              <div class="weekly-avatar-circle avatar-week4">W4</div>
+              <div>
+                <div class="weekly-card-name">WEEK 04</div>
+                <div class="weekly-card-dates">1–7 ต.ค. 2026</div>
+              </div>
+            </div>
+            <span class="weekly-status-tag tag-week4">Safe UX &amp; Auto</span>
+          </div>
+          <div style="font-size: 13.5px; font-weight: 700; color: #FFFFFF;">Safe Reader &amp; Auto-Commit</div>
+          <p class="weekly-card-desc">
+            Safe Markdown Reader (<code>mdSafe</code>) ป้องกัน XSS พร้อมเชิงอรรถอ้างอิงและสารบัญหน้าแรก, แก้ปัญหายุบบรรทัดในหน้าตรวจรับ (<code>c6af610</code>) และปุ่ม Auto-Commit ข้าม HITL
+          </p>
+          <div class="weekly-card-highlights">
+            <span class="weekly-pill">Safe Reader (mdSafe)</span>
+            <span class="weekly-pill">Review Pre-wrap</span>
+            <span class="weekly-pill">Prompt Tuning</span>
+            <span class="weekly-pill">Auto-Commit</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filter Buttons -->
+    <div class="filter-bar">
+      <button type="button" class="filter-btn active" onclick="filterTimeline('all')">ทุกสัปดาห์ (All Weeks)</button>
+      <button type="button" class="filter-btn" onclick="filterTimeline('week1')">Week 1 (1–7 ก.ย.)</button>
+      <button type="button" class="filter-btn" onclick="filterTimeline('week2')">Week 2 (15–21 ก.ย.)</button>
+      <button type="button" class="filter-btn" onclick="filterTimeline('week3')">Week 3 (22–30 ก.ย.)</button>
+      <button type="button" class="filter-btn" onclick="filterTimeline('week4')">Week 4 (1–7 ต.ค.)</button>
+    </div>
+
+    <!-- Timeline Stream -->
+    <div class="timeline-stream" id="timelineStream">
+
+      <!-- ================================================================== -->
+      <!-- WEEK 1: 1–7 กันยายน 2026 -->
+      <!-- ================================================================== -->
+      <div class="timeline-week-section" data-week="week1">
+        <div class="week-section-node node-week1"></div>
+        <div class="week-section-header">
+          <div class="week-section-title">WEEK 01 (1–7 กันยายน 2026)</div>
+          <span class="week-section-badge">วางรากฐาน Ingest &amp; ความถูกต้องของระบบ (Core Ingest &amp; Error Handling)</span>
+        </div>
+
+        <!-- Entry 1.1: Docstring & Page Search -->
+        <div class="entry-card">
+          <div class="entry-top-row">
+            <div class="entry-title-wrap">
+              <h3 class="entry-title">ปรับแก้คำอธิบายการทำงานของ _ensure_summary() ให้ตรงกับโค้ดสถาปัตยกรรมจริง</h3>
+              <p class="entry-why"><strong>ทำไม:</strong> Docstring เดิมระบุว่านำ Summary ไปใส่ทุก Chunk Header แต่แท้จริงแล้วนำไปใช้ทำ Page-level Vector เท่านั้น</p>
+            </div>
+            <span class="functional-badge badge-blue">Core Ingestion Architecture</span>
+          </div>
+
+          <div class="details-box">
+            <div class="detail-row">
+              <span class="detail-label">FILES:</span>
+              <span class="detail-content" style="font-family: var(--font-mono); color: #38BDF8;">ingest.py:1081-1090</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">IMPACT:</span>
+              <div class="detail-content">
+                ทำความเข้าใจถูกต้องว่าหน้าที่ไม่มี <code>summary:</code> จะส่งผลต่อ Page Search เท่านั้น แต่ Chunk Search ยังทำงานได้ตามปกติ
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Entry 1.2: Error Trapping & Tree View -->
+        <div class="entry-card">
+          <div class="entry-top-row">
+            <div class="entry-title-wrap">
+              <h3 class="entry-title">ดักจับสาเหตุจริงของ LITELLM_API_KEY ค่าว่าง และทำ File Browser โฟลเดอร์พับได้</h3>
+              <p class="entry-why"><strong>ทำไม:</strong> เมื่อ API Key ว่าง ระบบขึ้นแจ้งเตือนผิดพลาดว่าเป็นปัญหาเครือข่าย/VPN ทำให้ผู้ใช้แก้ผิดจุด และรายการไฟล์เดิมเป็นลิสต์แบนยาวไม่สามารถพับได้</p>
+            </div>
+            <span class="functional-badge badge-blue">Error Trapping &amp; Tree View</span>
+          </div>
+
+          <div class="details-box">
+            <div class="detail-row">
+              <span class="detail-label">FILES:</span>
+              <span class="detail-content" style="font-family: var(--font-mono); color: #38BDF8;">ingest.py:454-470, 491-493, static/index.html:1244, 6107, 6893-7093</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">COMMITS:</span>
+              <div class="detail-content">
+                <span class="commit-pill">a14b532</span>
+                <span class="commit-pill">e5e3477</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="feature-list">
+            <div class="feature-item">
+              <div class="feature-head">ดักจับ MissingAPIKey</div>
+              <div class="feature-sub">ส่งรหัสข้อผิดพลาด <code>no_api_key</code> ชัดเจน แจ้งให้ผู้ใช้ใส่ Key ใน Settings เลิกแจ้งว่าเป็นปัญหา VPN</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-head">โฟลเดอร์พับได้แบบ Obsidian</div>
+              <div class="feature-sub">จัดกลุ่มโฟลเดอร์เป็นชั้น พร้อมจำสถานะพับ/กางใน <code>localStorage['fb.openFolders']</code> แยกรายแท็บ</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-head">Attribute Escaping Hardening</div>
+              <div class="feature-sub">แยกฟังก์ชัน <code>_fbAttr()</code> ป้องกันโค้ดหลุดจากชื่อไฟล์ที่มีเครื่องหมายคำพูดคู่ (<code>"</code>)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================== -->
+      <!-- WEEK 2: 15–21 กันยายน 2026 -->
+      <!-- ================================================================== -->
+      <div class="timeline-week-section" data-week="week2">
+        <div class="week-section-node node-week2"></div>
+        <div class="week-section-header">
+          <div class="week-section-title">WEEK 02 (15–21 กันยายน 2026)</div>
+          <span class="week-section-badge">ระบบความปลอดภัย Local Auth &amp; กราฟสถาปัตยกรรม (Security &amp; Architecture Graph)</span>
+        </div>
+
+        <!-- Entry 2.1: Local Auth & Graph -->
+        <div class="entry-card">
+          <div class="entry-top-row">
+            <div class="entry-title-wrap">
+              <h3 class="entry-title">ระบบ Auth โหมด Local (ทำงานออฟไลน์ได้), แถบ Properties และกราฟ Cytoscape Cola</h3>
+              <p class="entry-why"><strong>ทำไม:</strong> เดิมแอปผูกกับ auth-service ในออฟฟิศเท่านั้น ทำให้พัฒนาที่บ้านหรือใช้งานนอกเครือข่ายไม่ได้เลย</p>
+            </div>
+            <span class="functional-badge badge-purple">Local Auth &amp; Cola Graph</span>
+          </div>
+
+          <div class="details-box">
+            <div class="detail-row">
+              <span class="detail-label">FILES:</span>
+              <span class="detail-content" style="font-family: var(--font-mono); color: #C084FC;">auth_local.py, auth_client.py, main.py, static/index.html, tests/test_fm_props.js</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">COMMITS:</span>
+              <div class="detail-content">
+                <span class="commit-pill">700d461</span>
+                <span class="commit-pill">c9374c9</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="feature-list">
+            <div class="feature-item">
+              <div class="feature-head">โหมด Local Authentication</div>
+              <div class="feature-sub">แฮชรหัสผ่านด้วย PBKDF2-HMAC-SHA256 แยกเก็บใน <code>data/auth_local.json</code> เพื่อความปลอดภัย ไม่ปนกับ <code>users.json</code></div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-head">แถบ Properties เหนือเนื้อหา</div>
+              <div class="feature-sub">แสดงผล YAML Frontmatter ครบถ้วน รองรับ wikilink, inline list และ block scalar</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-head">กราฟฟิสิกส์ Cytoscape Cola</div>
+              <div class="feature-sub">ลากโหนดแล้วตัวอื่นไหลตามแบบ Obsidian พร้อมระบบตรวจจับสองชั้นและ Fallback สู่ <code>cose</code> อัตโนมัติ</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-head">Offline Bundled Vendors</div>
+              <div class="feature-sub">เพิ่ม <code>cola.min.js</code> และ <code>cytoscape-cola.min.js</code> เข้าโปรเจกต์โดยตรง ไม่พึ่งพา CDN ภายนอก</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Entry 2.2: Dev Bypass Integration -->
+        <div class="entry-card">
+          <div class="entry-top-row">
+            <div class="entry-title-wrap">
+              <h3 class="entry-title">การแก้ปัญหาและผสานโค้ดระหว่าง Local Auth กับ Dev Password Bypass</h3>
+              <p class="entry-why"><strong>ทำไม:</strong> สายงานพัฒนาที่เพิ่ม <code>AUTH_LOCAL_DEV</code> + <code>AUTH_DEV_PASSWORD</code> สำหรับการทดสอบ ทำให้เกิด Conflict กับโหมด Local ใน <code>auth_client.py</code></p>
+            </div>
+            <span class="functional-badge badge-purple">Auth Integration &amp; Security</span>
+          </div>
+
+          <div class="details-box">
+            <div class="detail-row">
+              <span class="detail-label">RESOLUTION:</span>
+              <div class="detail-content">
+                ผสานการทำงานให้เงื่อนไข Developer Bypass ชนะก่อน หากไม่มีจึงตกไปตรวจสอบโหมด Local จริง และใน <code>static/index.html</code> มีการเก็บ CSS และจัดระเบียบหน้าโปรไฟล์ร่วมกัน
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================== -->
+      <!-- WEEK 3: 22–30 กันยายน 2026 -->
+      <!-- ================================================================== -->
+      <div class="timeline-week-section" data-week="week3">
+        <div class="week-section-node node-week3"></div>
+        <div class="week-section-header">
+          <div class="week-section-title">WEEK 03 (22–30 กันยายน 2026)</div>
+          <span class="week-section-badge">ปัญญาประดิษฐ์ Vision OCR 4 ระดับ &amp; Parallel Ingestion (Vision OCR &amp; Parallel Pipeline)</span>
+        </div>
+
+        <!-- Entry 3.1: Vision LLM OCR -->
+        <div class="entry-card">
+          <div class="entry-top-row">
+            <div class="entry-title-wrap">
+              <h3 class="entry-title">พัฒนาระบบ OCR สำหรับหน้า PDF ที่ไม่มี Text Layer ด้วย Vision LLM</h3>
+              <p class="entry-why"><strong>ทำไม:</strong> เดิมระบบปฏิเสธไฟล์สแกนทั้งหมด และมีบั๊กเงียบที่ไฟล์ผสม (มีข้อความบางหน้า) ผ่านการตรวจแต่หน้าที่เป็นสแกนจะว่างเปล่า</p>
+            </div>
+            <span class="functional-badge badge-cyan">Multi-Tier Vision LLM OCR</span>
+          </div>
+
+          <div class="details-box">
+            <div class="detail-row">
+              <span class="detail-label">FILES:</span>
+              <span class="detail-content" style="font-family: var(--font-mono); color: #38BDF8;">ingest.py:3120-3307, 3738, ingest_parallel.py:80-85, tests/test_pdf_ocr.py</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">COMMIT:</span>
+              <div class="detail-content">
+                <span class="commit-pill">accd155</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <div class="metric-box">
+              <span class="metric-val">$0.0023</span>
+              <span class="metric-lbl">ต้นทุนต่อหน้า (110 DPI)</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-val">100%</span>
+              <span class="metric-lbl">ความแม่นยำหน้าจำลอง</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-val">4 Tiers</span>
+              <span class="metric-lbl">ระดับการประมวลผลต้นทุน</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-val">4 Threads</span>
+              <span class="metric-lbl">Global Process Concurrency</span>
+            </div>
+          </div>
+
+          <div class="feature-list" style="margin-top: 8px;">
+            <div class="feature-item">
+              <div class="feature-head">Per-Page Scan Detection</div>
+              <div class="feature-sub">ตรวจจับแบบรายหน้าแทนค่าเฉลี่ยทั้งไฟล์ ป้องกันหน้าสแกนในเอกสารผสมหลุดหาย</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-head">4-Tier Cost Architecture</div>
+              <div class="feature-sub">Tier 0 (PyMuPDF ฟรี) &rarr; ข้ามหน้าขาว 36 DPI &rarr; Cache เดิม &rarr; Tier 1 (gpt-5-mini) &rarr; Tier 2 (Retry 200 DPI)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Entry 3.2: Parallel Web Pipeline -->
+        <div class="entry-card">
+          <div class="entry-top-row">
+            <div class="entry-title-wrap">
+              <h3 class="entry-title">เชื่อมต่อ Vision OCR เข้าสู่เส้นทาง Web Ingestion Parallel (Option 5)</h3>
+              <p class="entry-why"><strong>ทำไม:</strong> หน้าเว็บ Upload Note เรียก <code>/ingest/stream?option=5</code> ถ้าไม่เชื่อมต่อ OCR เข้าเส้นทางนี้ ผู้ใช้เว็บจะไม่ได้ใช้ OCR เลย</p>
+            </div>
+            <span class="functional-badge badge-cyan">Web Parallel Pipeline</span>
+          </div>
+
+          <div class="details-box">
+            <div class="detail-row">
+              <span class="detail-label">INTEGRATION:</span>
+              <div class="detail-content">
+                พัฒนาเส้นทาง <code>process_inbox_parallel</code> ใน <code>ingest_parallel.py</code> และเชื่อมหน้าเว็บ Upload Note (<span class="commit-pill">624d585</span>) พร้อมเชื่อมต่อ OCR เข้าสู่ <code>ingest_parallel.py:80-85</code> โดยใช้ import เฉพาะจุด เพื่อลดความเสี่ยงจากการชนกันของโค้ด
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================== -->
+      <!-- WEEK 4: 1–7 ตุลาคม 2026 -->
+      <!-- ================================================================== -->
+      <div class="timeline-week-section" data-week="week4">
+        <div class="week-section-node node-week4"></div>
+        <div class="week-section-header">
+          <div class="week-section-title">WEEK 04 (1–7 ตุลาคม 2026)</div>
+          <span class="week-section-badge">ประสบการณ์ใช้งาน (UX), แก้บั๊ก Review &amp; Auto-Commit (Safe UX &amp; Automation)</span>
+        </div>
+
+        <!-- Entry 4.1: Safe Reader & UX -->
+        <div class="entry-card">
+          <div class="entry-top-row">
+            <div class="entry-title-wrap">
+              <h3 class="entry-title">UI รอบ User-Friendly: มุมมองอ่าน Markdown สารบัญหน้าแรก และกราฟโหนดลอย</h3>
+              <p class="entry-why"><strong>ทำไม:</strong> หน้า File Browser เดิมโชว์เป็น monospace ดิบ มีลิงก์ซอร์สรกทุกบูลเล็ต และปุ่มเยอะจนผู้ใช้งานใหม่สับสน</p>
+            </div>
+            <span class="functional-badge badge-green">Safe Reader &amp; UX</span>
+          </div>
+
+          <div class="details-box">
+            <div class="detail-row">
+              <span class="detail-label">FILES:</span>
+              <span class="detail-content" style="font-family: var(--font-mono); color: #34D399;">static/index.html (ไม่แตะ backend / ingest)</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">COMMITS:</span>
+              <div class="detail-content">
+                <span class="commit-pill">21becf3</span>
+                <span class="commit-pill">fdba6b2</span>
+                <span class="commit-pill">e19a330</span>
+                <span class="commit-pill">ae15072</span>
+                <span class="commit-pill">ca9e857</span>
+                <span class="commit-pill">2c2e8c8</span>
+                <span class="commit-pill">15fa583</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="feature-list">
+            <div class="feature-item">
+              <div class="feature-head">มุมมองอ่าน (Reader Mode)</div>
+              <div class="feature-sub">แปลง Markdown ผ่าน <code>mdSafe</code> แปลง citation เป็นเลขยกกำลัง ¹ และรวบรวม Source ท้ายหน้า</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-head">กราฟโหนดลอยแบบ Obsidian</div>
+              <div class="feature-sub">เพิ่มเลเยอร์ตกแต่งให้โหนดลอยเบา ๆ แยกชั้นจาก Cola Physics ไม่สั่นตอนซูมหรือจัดผัง</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-head">รวมแท็บ Pages &amp; สารบัญหน้าแรก</div>
+              <div class="feature-sub">นำ <code>index.md</code> เป็นหน้าแรกแทน "Pick a file" พร้อมเพิ่ม <code>_fbOpenFolder</code> กันบั๊กแก้ทับไฟล์ระบบ</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-head">โฟลเดอร์ขึ้นต้นตัวพิมพ์ใหญ่</div>
+              <div class="feature-sub">ใช้ JS แปลงชื่อตัวแรกเป็น Capitalize ป้องกัน CSS กินสระภาษาไทยเพี้ยน</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Entry 4.2: Review Bugfix & Auto-Commit -->
+        <div class="entry-card">
+          <div class="entry-top-row">
+            <div class="entry-title-wrap">
+              <h3 class="entry-title">แก้บั๊กหน้า Review ยุบบรรทัด, ยกระดับ OCR Prompt และเพิ่มปุ่ม Auto-Commit</h3>
+              <p class="entry-why"><strong>ทำไม:</strong> แก้ปัญหาหน้า Review เผลอยุบบรรทัดข้อความติดกัน, เพิ่มความละเอียดในการสกัด OCR ตารางยาว และเพิ่มทางลัดข้าม HITL</p>
+            </div>
+            <span class="functional-badge badge-green">Review Bugfix &amp; Auto-Commit</span>
+          </div>
+
+          <div class="details-box">
+            <div class="detail-row">
+              <span class="detail-label">FILES:</span>
+              <span class="detail-content" style="font-family: var(--font-mono); color: #34D399;">ingest.py, static/index.html, .env.example</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">COMMITS:</span>
+              <div class="detail-content">
+                <span class="commit-pill">c6af610</span>
+                <span class="commit-pill">6286593</span>
+                <span class="commit-pill">5334bc0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="feature-list">
+            <div class="feature-item">
+              <div class="feature-head">แก้บั๊ก Review ยุบบรรทัด (c6af610)</div>
+              <div class="feature-sub">แก้ Regex <code>/\\n/g</code> ที่ backslash ซ้อนกันเป็น <code>/\n/g</code> พร้อมจัดระเบียบด้วย <code>white-space: pre-wrap</code></div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-head">OCR Prompt &amp; Config (6286593)</div>
+              <div class="feature-sub">เพิ่มเทคนิคหั่นภาพยาว, <code>detail: high</code>, ขยาย <code>max_tokens=8192</code> และเพิ่มตัวแปรใน <code>.env.example</code></div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-head">ปุ่ม Auto-Commit (5334bc0)</div>
+              <div class="feature-sub">เพิ่มปุ่มข้ามขั้นตอน Human-in-the-loop (HITL) ในหน้า Upload เพื่อให้บันทึกเข้าคลังได้ทันที</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Entry 4.3: OCR Benchmark -->
+        <div class="entry-card">
+          <div class="entry-top-row">
+            <div class="entry-title-wrap">
+              <h3 class="entry-title">วิจัยปัญหา OCR เอกสาร 100 DPI "สแกนมาไม่ครบ"</h3>
+              <p class="entry-why"><strong>ทำไม:</strong> ตรวจสอบว่าเกิดจาก Token Limit หรือปัญหาการแบ่งบรรทัดของ Vision Model</p>
+            </div>
+            <span class="functional-badge badge-green">OCR Benchmark &amp; Validation</span>
+          </div>
+
+          <div class="details-box">
+            <div class="detail-row">
+              <span class="detail-label">FINDING:</span>
+              <div class="detail-content">
+                จำลองใบเสนอราคาภาษาไทย 45 แถวที่ 100 DPI พบว่าผลลัพธ์ครบ 45/45 แถว, ยอดรวมถูกต้อง 45/45, ใช้เอาต์พุต 1,297 tokens จากเพดาน 4,096 &mdash; พิสูจน์ว่าปัญหาไม่ได้เกิดจาก <code>max_tokens</code>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Outstanding Items / Collaboration Backlog -->
+    <section class="pending-section">
+      <div class="pending-header">
+        <h2 class="pending-title">ข้อสังเกตและแผนงานในระยะถัดไป (Next Engineering Steps)</h2>
+        <span class="week-section-badge" style="color: #FBBF24; border-color: rgba(245, 158, 11, 0.4);">Engineering Backlog</span>
+      </div>
+
+      <div class="pending-grid">
+        <div class="pending-item">
+          <div class="pending-item-head">1. ปรับจูน OCR System Prompt ให้ตรงกัน</div>
+          <div class="pending-item-desc">กำหนดมาตรฐาน System Prompt ของโมเดล OCR ให้เน้นที่เอกสาร TOR/ใบเสนอราคา และรักษาความแม่นยำของตัวเลขภาษี TAX ID</div>
+        </div>
+        <div class="pending-item">
+          <div class="pending-item-head">2. หน้าต่างเปลี่ยนรหัสผ่านในโหมด Local</div>
+          <div class="pending-item-desc">เปิดใช้งานฟอร์มเปลี่ยนรหัสผ่านสำหรับโหมด Local โดยดึงค่าจาก <code>GET /auth/config</code> เพื่อให้ผู้ใช้สามารถเปลี่ยนรหัสตนเองได้</div>
+        </div>
+        <div class="pending-item">
+          <div class="pending-item-head">3. อัปเดต .env.example ให้สมบูรณ์</div>
+          <div class="pending-item-desc">ผสานตัวแปรใหม่ทั้งฝั่ง <code>AUTH_MODE</code> และ <code>LLM_MODEL_OCR</code> / <code>OCR_DPI</code> เข้าสู่ไฟล์ตัวอย่าง</div>
+        </div>
+        <div class="pending-item">
+          <div class="pending-item-head">4. ตรวจสอบการจัดการหน้าเอกสารยาวและตาราง</div>
+          <div class="pending-item-desc">ทดสอบความสมบูรณ์ของเอกสารที่เกิน 45 แถว และเอกสารสแกนจากกล้องมือถือ เพื่อรักษาความถูกต้องของข้อมูล 100%</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="timeline-footer">
+      PIKA WIKI Platform &middot; Weekly Development Chronology &middot; Documented from Work Log — Production Milestones
+    </footer>
+
+  </main>
+
+  <script>
+    function filterTimeline(weekId) {
+      // Update buttons
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const weekSections = document.querySelectorAll('.timeline-week-section');
+      weekSections.forEach(section => {
+        const week = section.dataset.week;
+        if (weekId === 'all' || week === weekId) {
+          section.style.display = 'flex';
+        } else {
+          section.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

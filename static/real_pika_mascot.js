@@ -1,0 +1,1758 @@
+(function initClayCharacterMascot() {
+  const container = document.getElementById('blueprintStage');
+  const universe = document.getElementById('blueprintUniverse');
+  if (!container || !universe || typeof THREE === 'undefined') return;
+
+  const width = 450;
+  const height = 480;
+
+  // 1. Scene & Perspective Camera (Heroic Executive Scale - 20% Bigger)
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(33, width / height, 0.1, 100);
+  camera.position.set(0, -0.04, 5.10);
+  camera.lookAt(0, -0.04, 0);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(width, height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.toneMapping = THREE.NoToneMapping;
+  container.appendChild(renderer.domElement);
+
+  const rootGroup = new THREE.Group();
+  scene.add(rootGroup);
+
+  function isCurrentLight() {
+    return document.documentElement.getAttribute('data-theme') === 'light';
+  }
+
+  // 2. Calibrated Studio Clay Shader Material (Exact Subsurface Wrap + Fresnel Clay Shading)
+  const clayMaterial = new THREE.ShaderMaterial({
+    vertexColors: true,
+    side: THREE.DoubleSide,
+    vertexShader: `
+      varying vec3 vNormalWorld;
+      varying vec3 vColor;
+      void main() {
+        vColor = color;
+        vNormalWorld = normalize(mat3(modelMatrix) * normal);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vNormalWorld;
+      varying vec3 vColor;
+      void main() {
+        vec3 N = normalize(vNormalWorld);
+        vec3 L_key = normalize(vec3(0.28, 0.24, 0.93));
+        vec3 L_fill = normalize(vec3(-0.55, -0.15, 0.82));
+        vec3 L_top = normalize(vec3(0.0, 0.95, 0.31));
+        float ndotl_key = clamp(dot(N, L_key) * 0.55 + 0.45, 0.0, 1.0);
+        float ndotl_fill = clamp(dot(N, L_fill) * 0.50 + 0.50, 0.0, 1.0);
+        float ndotl_top = clamp(dot(N, L_top) * 0.50 + 0.50, 0.0, 1.0);
+        float view_z = clamp(N.z, 0.0, 1.0);
+        float clay_fresnel = 0.80 + 0.20 * pow(view_z, 0.45);
+        float shade = (0.34 + 0.52 * ndotl_key + 0.14 * ndotl_fill + 0.05 * ndotl_top) * clay_fresnel;
+        vec3 finalCol = clamp(vColor * shade, 0.0, 1.0);
+        gl_FragColor = vec4(finalCol, 1.0);
+      }
+    `
+  });
+
+  // High-Resolution 1024x320 MFEC Logo Canvas Texture for the White T-Shirt Chest
+  function createMfecLogoTexture() {
+    const cvs = document.createElement('canvas');
+    cvs.width = 1024;
+    cvs.height = 320;
+    const ctx = cvs.getContext && cvs.getContext('2d');
+    if (ctx) {
+      ctx.clearRect(0, 0, 1024, 320);
+      const letterGrad = ctx.createLinearGradient(0, 62, 0, 319);
+      letterGrad.addColorStop(0.0, '#474c56');
+      letterGrad.addColorStop(1.0, '#252b30');
+      ctx.fillStyle = letterGrad;
+
+      function fillPoly(pts) {
+        ctx.beginPath();
+        ctx.moveTo(pts[0][0], pts[0][1]);
+        for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // M, F, E, C exact vector contours
+      fillPoly([[0, 62], [70, 62], [142, 214], [215, 62], [285, 62], [285, 319], [213, 319], [213, 203], [158, 319], [127, 319], [72, 203], [72, 319], [0, 319]]);
+      fillPoly([[358, 62], [539, 62], [539, 125], [429, 125], [429, 162], [507, 162], [507, 219], [429, 219], [429, 319], [358, 319]]);
+      fillPoly([[576, 62], [766, 62], [766, 125], [648, 125], [648, 162], [735, 162], [735, 219], [648, 219], [648, 256], [766, 256], [766, 319], [576, 319]]);
+      fillPoly([[803, 175], [815, 124], [827, 103], [839, 89], [851, 79], [863, 71], [875, 65], [887, 61], [899, 58], [911, 55], [923, 54], [935, 54], [947, 54], [959, 55], [971, 57], [983, 60], [995, 63], [1007, 68], [1019, 74], [1023, 79], [1023, 125], [1019, 131], [1007, 132], [995, 128], [983, 125], [971, 122], [959, 120], [947, 118], [935, 118], [923, 120], [911, 125], [899, 132], [887, 145], [875, 173], [874, 186], [875, 198], [887, 226], [899, 239], [911, 247], [923, 252], [935, 254], [947, 254], [959, 253], [971, 250], [983, 246], [995, 242], [1007, 236], [1019, 237], [1023, 243], [1023, 289], [1019, 294], [1007, 302], [995, 308], [983, 313], [971, 316], [959, 318], [947, 319], [935, 319], [923, 318], [911, 316], [899, 314], [887, 310], [875, 305], [863, 298], [851, 289], [839, 278], [827, 264], [815, 243], [803, 197]]);
+
+      // 3 Ascending Blue Right-Angle Chevrons
+      function fillRoundRect(x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+        ctx.fill();
+      }
+      function drawChevron(x0, y0, x1, y1, th, cTop, cBot) {
+        const g = ctx.createLinearGradient(x0, y0, x1, y1);
+        g.addColorStop(0.0, cTop);
+        g.addColorStop(1.0, cBot);
+        ctx.fillStyle = g;
+        const r = th * 0.5;
+        fillRoundRect(x0, y0, x1 - x0, th, r);
+        fillRoundRect(x1 - th, y0, th, y1 - y0, r);
+      }
+      drawChevron(214, 58, 285, 131, 22, '#47a8e5', '#3586d2');
+      drawChevron(251, 29, 321, 100, 21, '#2978d8', '#4477c3');
+      drawChevron(288,  0, 357,  70, 20, '#6676b6', '#5c6bb5');
+    }
+    const tex = new THREE.CanvasTexture(cvs);
+    tex.minFilter = THREE.LinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.needsUpdate = true;
+    return tex;
+  }
+
+  const mfecLogoTex = createMfecLogoTexture();
+  const shirtClayMaterial = new THREE.ShaderMaterial({
+    vertexColors: true,
+    side: THREE.DoubleSide,
+    uniforms: {
+      uLogoTex: { value: mfecLogoTex }
+    },
+    vertexShader: `
+      varying vec3 vNormalWorld;
+      varying vec3 vColor;
+      varying vec3 vPosObj;
+      void main() {
+        vColor = color;
+        vPosObj = position;
+        vNormalWorld = normalize(mat3(modelMatrix) * normal);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D uLogoTex;
+      varying vec3 vNormalWorld;
+      varying vec3 vColor;
+      varying vec3 vPosObj;
+      void main() {
+        vec3 N = normalize(vNormalWorld);
+        vec3 L_key = normalize(vec3(0.28, 0.24, 0.93));
+        vec3 L_fill = normalize(vec3(-0.55, -0.15, 0.82));
+        vec3 L_top = normalize(vec3(0.0, 0.95, 0.31));
+        float ndotl_key = clamp(dot(N, L_key) * 0.55 + 0.45, 0.0, 1.0);
+        float ndotl_fill = clamp(dot(N, L_fill) * 0.50 + 0.50, 0.0, 1.0);
+        float ndotl_top = clamp(dot(N, L_top) * 0.50 + 0.50, 0.0, 1.0);
+        float view_z = clamp(N.z, 0.0, 1.0);
+        float clay_fresnel = 0.80 + 0.20 * pow(view_z, 0.45);
+        float shade = (0.34 + 0.52 * ndotl_key + 0.14 * ndotl_fill + 0.05 * ndotl_top) * clay_fresnel;
+        vec3 baseCol = vColor;
+        if (vPosObj.z > 0.05 && vPosObj.x >= -0.225 && vPosObj.x <= 0.225 && vPosObj.y >= 0.005 && vPosObj.y <= 0.148) {
+          vec2 uvLogo = vec2((vPosObj.x + 0.225) / 0.450, (vPosObj.y - 0.005) / 0.143);
+          vec4 logoSample = texture2D(uLogoTex, uvLogo);
+          baseCol = mix(baseCol, logoSample.rgb, logoSample.a);
+        }
+        vec3 finalCol = clamp(baseCol * shade, 0.0, 1.0);
+        gl_FragColor = vec4(finalCol, 1.0);
+      }
+    `
+  });
+
+  const shadowMat = new THREE.MeshBasicMaterial({
+    color: 0x000000,
+    transparent: true,
+    opacity: 0.28
+  });
+
+  const holoGlassMat = new THREE.MeshBasicMaterial({
+    color: 0x38bdf8,
+    transparent: true,
+    opacity: 0.0
+  });
+
+  const holoRingMat = new THREE.MeshBasicMaterial({
+    color: 0x38bdf8,
+    transparent: true,
+    opacity: 0.0
+  });
+
+  // 3. Exact Calibrated Studio Clay Palette (RGB 0..1)
+  const C_SKIN       = [0.95, 0.70, 0.51];
+  const C_SKIN_MID   = [0.86, 0.58, 0.39];
+  const C_BLUSH      = [0.90, 0.54, 0.36];
+  const C_EAR_IN     = [0.72, 0.42, 0.25];
+  const C_NOSE       = [0.92, 0.59, 0.39];
+  const C_HAIR       = [0.26, 0.16, 0.09];
+  const C_HAIR_DARK  = [0.20, 0.12, 0.06];
+  const C_EYE        = [0.07, 0.04, 0.03];
+  const C_GLINT      = [0.99, 0.99, 0.99];
+  const C_SHIRT      = [0.968, 0.964, 0.952];
+  const C_SHIRT_DK   = [0.875, 0.868, 0.848];
+  const C_WATCH      = [0.16, 0.14, 0.12];
+  const C_SHORTS     = [0.64, 0.52, 0.30];
+  const C_SHORTS_CUF = [0.66, 0.54, 0.31];
+  const C_SHORTS_DK  = [0.42, 0.32, 0.17];
+  const C_SHOE       = [0.91, 0.81, 0.58];
+  const C_SHOE_SHAD  = [0.81, 0.71, 0.48];
+  const C_SHOE_SOLE  = [0.92, 0.83, 0.61];
+  const C_SHOE_LINE  = [0.76, 0.66, 0.45];
+  const C_LACE       = [0.95, 0.86, 0.64];
+
+  // 4. Parametric Sculpted Clay Geometry Builders
+  function transformVerts(verts, pos, rx, ry, rz, pivotY) {
+    const px = pos ? pos[0] : 0;
+    const py = (pos ? pos[1] : 0) - (pivotY || 0);
+    const pz = pos ? pos[2] : 0;
+    const cx = Math.cos(rx || 0), sx = Math.sin(rx || 0);
+    const cy = Math.cos(ry || 0), sy = Math.sin(ry || 0);
+    const cz = Math.cos(rz || 0), sz = Math.sin(rz || 0);
+    const out = new Float32Array(verts.length);
+    for (let i = 0; i < verts.length; i += 3) {
+      let x = verts[i], y = verts[i + 1], z = verts[i + 2];
+      // Rx
+      let y1 = y * cx - z * sx;
+      let z1 = y * sx + z * cx;
+      // Ry
+      let x2 = x * cy + z1 * sy;
+      let z2 = -x * sy + z1 * cy;
+      // Rz
+      let x3 = x2 * cz - y1 * sz;
+      let y3 = x2 * sz + y1 * cz;
+      out[i]     = x3 + px;
+      out[i + 1] = y3 + py;
+      out[i + 2] = z2 + pz;
+    }
+    return out;
+  }
+
+  function buildClayMesh(verts, indices, colorOrFn, pivotOffsetY) {
+    const geom = new THREE.BufferGeometry();
+    geom.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+    geom.setIndex(indices);
+    geom.computeVertexNormals();
+
+    const count = verts.length / 3;
+    const colors = new Float32Array(verts.length);
+    const isFn = typeof colorOrFn === 'function';
+    const pyOff = pivotOffsetY || 0;
+
+    for (let i = 0; i < count; i++) {
+      const x = verts[i * 3];
+      const y = verts[i * 3 + 1] + pyOff;
+      const z = verts[i * 3 + 2];
+      const c = isFn ? colorOrFn(x, y, z) : colorOrFn;
+      colors[i * 3]     = c[0];
+      colors[i * 3 + 1] = c[1];
+      colors[i * 3 + 2] = c[2];
+    }
+    geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    return new THREE.Mesh(geom, clayMaterial);
+  }
+
+  function makeSphereData(rx, ry, rz, uSeg, vSeg, deformFn) {
+    const verts = [];
+    for (let iv = 0; iv <= vSeg; iv++) {
+      const v = iv / vSeg;
+      const theta = v * Math.PI;
+      const st = Math.sin(theta), ct = Math.cos(theta);
+      for (let iu = 0; iu <= uSeg; iu++) {
+        const u = iu / uSeg;
+        const phi = u * 2.0 * Math.PI;
+        let x = -rx * Math.cos(phi) * st;
+        let y = ry * ct;
+        let z = rz * Math.sin(phi) * st;
+        if (deformFn) {
+          const d = deformFn(x, y, z, phi, theta);
+          x = d[0]; y = d[1]; z = d[2];
+        }
+        verts.push(x, y, z);
+      }
+    }
+    const indices = [];
+    for (let iv = 0; iv < vSeg; iv++) {
+      for (let iu = 0; iu < uSeg; iu++) {
+        const a = iv * (uSeg + 1) + iu;
+        const b = a + 1;
+        const c = a + (uSeg + 1);
+        const d = c + 1;
+        indices.push(a, c, b, b, c, d);
+      }
+    }
+    return { verts: new Float32Array(verts), indices };
+  }
+
+  function makeLatheCylData(rTop, rBot, h, uSeg, vSeg, rzScale, profileFn, cap) {
+    const verts = [];
+    for (let iv = 0; iv <= vSeg; iv++) {
+      const v = iv / vSeg;
+      let y = (0.5 - v) * h;
+      let r = rTop * (1.0 - v) + rBot * v;
+      let rz = r * (rzScale || 1.0);
+      if (profileFn) {
+        const p = profileFn(v, r, rz, y);
+        r = p[0]; rz = p[1]; y = p[2];
+      }
+      for (let iu = 0; iu <= uSeg; iu++) {
+        const phi = (iu / uSeg) * 2.0 * Math.PI;
+        const x = -r * Math.cos(phi);
+        const z = rz * Math.sin(phi);
+        verts.push(x, y, z);
+      }
+    }
+    const indices = [];
+    for (let iv = 0; iv < vSeg; iv++) {
+      for (let iu = 0; iu < uSeg; iu++) {
+        const a = iv * (uSeg + 1) + iu;
+        const b = a + 1;
+        const c = a + (uSeg + 1);
+        const d = c + 1;
+        indices.push(a, c, b, b, c, d);
+      }
+    }
+    if (cap !== false) {
+      const topC = verts.length / 3;
+      verts.push(0, h * 0.5, 0);
+      const botC = verts.length / 3;
+      verts.push(0, -h * 0.5, 0);
+      for (let iu = 0; iu < uSeg; iu++) {
+        indices.push(topC, iu, iu + 1);
+        const b0 = vSeg * (uSeg + 1) + iu;
+        indices.push(botC, b0 + 1, b0);
+      }
+    }
+    return { verts: new Float32Array(verts), indices };
+  }
+
+  function makeCuffData(rx, rz, h, lip, uSeg, vSeg) {
+    return makeLatheCylData(rx, rx, h, uSeg || 36, vSeg || 14, rz / rx, function(v, r, rz_, y) {
+      const t = (v - 0.5) * 2.0;
+      const bulge = Math.sqrt(Math.max(0.0, 1.0 - Math.pow(t, 6)));
+      return [rx - lip * (1.0 - bulge), rz - lip * (1.0 - bulge), y];
+    }, true);
+  }
+
+  function makeRoundedBoxData(wx, wy, wz, seg) {
+    const s = seg || 20;
+    return makeSphereData(wx, wy, wz, s * 2, s, function(x, y, z) {
+      const nx = x / wx, ny = y / wy, nz = z / wz;
+      const p = 5.0;
+      const normP = Math.pow(Math.pow(Math.abs(nx), p) + Math.pow(Math.abs(ny), p) + Math.pow(Math.abs(nz), p), 1.0 / p);
+      if (normP > 1e-6) {
+        const sc = 0.15 + 0.85 * (1.0 / normP);
+        x *= sc; y *= sc; z *= sc;
+      }
+      return [x, y, z];
+    });
+  }
+
+  function makeCapsuleCurveData(pts, rStart, rEnd, tSeg, rSeg, sz, customRadFn) {
+    const tS = tSeg || 20;
+    const rS = rSeg || 14;
+    const scaleZ = sz !== undefined ? sz : 1.0;
+    const r1 = rEnd !== undefined ? rEnd : rStart;
+    const cPts = [];
+    const nPts = pts.length;
+
+    for (let i = 0; i <= tS; i++) {
+      const t = (i / tS) * (nPts - 1);
+      const idx = Math.min(Math.floor(t), nPts - 2);
+      const f = t - idx;
+      const p0 = pts[Math.max(0, idx - 1)];
+      const p1 = pts[idx];
+      const p2 = pts[idx + 1];
+      const p3 = pts[Math.min(nPts - 1, idx + 2)];
+      const f2 = f * f, f3 = f2 * f;
+      const cx = 0.5 * ((2 * p1[0]) + (-p0[0] + p2[0]) * f + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * f2 + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * f3);
+      const cy = 0.5 * ((2 * p1[1]) + (-p0[1] + p2[1]) * f + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * f2 + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * f3);
+      const cz = 0.5 * ((2 * p1[2]) + (-p0[2] + p2[2]) * f + (2 * p0[2] - 5 * p1[2] + 4 * p2[2] - p3[2]) * f2 + (-p0[2] + 3 * p1[2] - 3 * p2[2] + p3[2]) * f3);
+      cPts.push([cx, cy, cz]);
+    }
+
+    const verts = [];
+    for (let i = 0; i <= tS; i++) {
+      const u = i / tS;
+      let r;
+      if (customRadFn) {
+        r = customRadFn(u);
+      } else {
+        let tip = 1.0;
+        if (u < 0.12) tip = Math.sin((u / 0.12) * Math.PI * 0.5);
+        else if (u > 0.88) tip = Math.sin(((1.0 - u) / 0.12) * Math.PI * 0.5);
+        r = (rStart * (1.0 - u) + r1 * u) * tip;
+      }
+
+      const pNext = cPts[Math.min(tS, i + 1)];
+      const pPrev = cPts[Math.max(0, i - 1)];
+      let tx = pNext[0] - pPrev[0], ty = pNext[1] - pPrev[1], tz = pNext[2] - pPrev[2];
+      const tLen = Math.max(Math.hypot(tx, ty, tz), 1e-8);
+      tx /= tLen; ty /= tLen; tz /= tLen;
+
+      let ux = 0, uy = 0, uz = 1;
+      if (Math.abs(tz) >= 0.9) { ux = 0; uy = 1; uz = 0; }
+      // norm = tang x up
+      let nx = ty * uz - tz * uy;
+      let ny = tz * ux - tx * uz;
+      let nz = tx * uy - ty * ux;
+      const nLen = Math.max(Math.hypot(nx, ny, nz), 1e-8);
+      nx /= nLen; ny /= nLen; nz /= nLen;
+      // binorm = tang x norm
+      const bx = ty * nz - tz * ny;
+      const by = tz * nx - tx * nz;
+      const bz = tx * ny - ty * nx;
+
+      const cp = cPts[i];
+      for (let j = 0; j <= rS; j++) {
+        const ang = (j / rS) * 2.0 * Math.PI;
+        const ca = Math.cos(ang) * r;
+        const sa = Math.sin(ang) * r * scaleZ;
+        verts.push(
+          cp[0] + nx * ca + bx * sa,
+          cp[1] + ny * ca + by * sa,
+          cp[2] + nz * ca + bz * sa
+        );
+      }
+    }
+
+    const indices = [];
+    for (let i = 0; i < tS; i++) {
+      for (let j = 0; j < rS; j++) {
+        const a = i * (rS + 1) + j;
+        const b = a + 1;
+        const c = a + (rS + 1);
+        const d = c + 1;
+        indices.push(a, b, c, b, d, c);
+      }
+    }
+    return { verts: new Float32Array(verts), indices };
+  }
+
+  // Floor Contact Shadow
+  const shadowGeo = new THREE.CircleGeometry(0.68, 36);
+  const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
+  shadowMesh.rotation.x = -Math.PI / 2;
+  shadowMesh.position.y = -1.495;
+  shadowMesh.scale.set(1.0, 0.42, 1.0);
+  rootGroup.add(shadowMesh);
+
+  // 3D Floating Holographic Spec Chip (When inspecting a project)
+  const holoGroup = new THREE.Group();
+  holoGroup.position.set(0.68, 0.35, 0.25);
+  rootGroup.add(holoGroup);
+
+  const chipMesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.18, 0), holoGlassMat);
+  holoGroup.add(chipMesh);
+
+  const chipRingGeo = new THREE.TorusGeometry(0.26, 0.010, 12, 36);
+  const chipRing1 = new THREE.Mesh(chipRingGeo, holoRingMat);
+  chipRing1.rotation.x = Math.PI / 2;
+  holoGroup.add(chipRing1);
+
+  const chipRing2 = new THREE.Mesh(chipRingGeo, holoRingMat);
+  chipRing2.rotation.y = Math.PI / 2;
+  holoGroup.add(chipRing2);
+
+  // Master Mascot Character Group
+  const charGroup = new THREE.Group();
+  rootGroup.add(charGroup);
+
+  // ============================================================================
+  // 1. HEAD & FACE MASTER GROUP (Pivoted at Neck y = 0.42 for natural head look)
+  // ============================================================================
+  const HEAD_PIVOT_Y = 0.42;
+  const headMasterGroup = new THREE.Group();
+  headMasterGroup.position.set(0, HEAD_PIVOT_Y, 0);
+  charGroup.add(headMasterGroup);
+
+  // Sculpted Chubby Boy Head (World center y = 0.825)
+  const headData = makeSphereData(0.404, 0.415, 0.405, 72, 54, function(x, y, z, phi) {
+    const ny = y / 0.415;
+    const cheek = Math.exp(-Math.pow((ny + 0.24) / 0.42, 2));
+    const temple = Math.exp(-Math.pow((ny - 0.35) / 0.40, 2));
+    x *= (1.0 + 0.080 * cheek - 0.040 * temple);
+    z *= (1.0 + 0.045 * cheek * Math.max(0.0, Math.sin(phi)));
+    if (z > 0) z *= 0.95;
+    if (ny < -0.35) {
+      const jawW = 1.0 + 0.040 * Math.exp(-Math.pow((ny + 0.60) / 0.30, 2));
+      x *= jawW;
+    }
+    return [x, y, z];
+  });
+  const headVerts = transformVerts(headData.verts, [0, 0.825, 0], 0, 0, 0, HEAD_PIVOT_Y);
+  headMasterGroup.add(buildClayMesh(headVerts, headData.indices, function(x, y, z) {
+    let r = C_SKIN[0], g = C_SKIN[1], b = C_SKIN[2];
+    const dl = Math.hypot(x + 0.23, y - 0.715, z - 0.32);
+    const dr = Math.hypot(x - 0.23, y - 0.715, z - 0.32);
+    const blushW = Math.max(0.0, 1.0 - Math.min(dl, dr) / 0.18) * 0.38;
+    r = r * (1.0 - blushW) + C_BLUSH[0] * blushW;
+    g = g * (1.0 - blushW) + C_BLUSH[1] * blushW;
+    b = b * (1.0 - blushW) + C_BLUSH[2] * blushW;
+
+    const dnose = Math.hypot(x / 0.075, (y - 0.715) / 0.045);
+    if (z > 0.30 && dnose < 1.0) {
+      const nw = (1.0 - dnose) * 0.28;
+      r = r * (1.0 - nw) + C_SKIN_MID[0] * nw;
+      g = g * (1.0 - nw) + C_SKIN_MID[1] * nw;
+      b = b * (1.0 - nw) + C_SKIN_MID[2] * nw;
+    }
+    if (y > 1.03) {
+      const bw = Math.min(1.0, (y - 1.03) / 0.08) * 0.28;
+      r = r * (1.0 - bw) + C_SKIN_MID[0] * bw;
+      g = g * (1.0 - bw) + C_SKIN_MID[1] * bw;
+      b = b * (1.0 - bw) + C_SKIN_MID[2] * bw;
+    }
+    const sideW = Math.min(1.0, Math.max(0.0, (Math.abs(x) - 0.27) / 0.17) * 0.25 + Math.max(0.0, (0.465 - y) / 0.08) * 0.25);
+    r = r * (1.0 - sideW) + C_SKIN_MID[0] * sideW;
+    g = g * (1.0 - sideW) + C_SKIN_MID[1] * sideW;
+    b = b * (1.0 - sideW) + C_SKIN_MID[2] * sideW;
+    return [r, g, b];
+  }, HEAD_PIVOT_Y));
+
+  // Large Plump C-Cup Ears
+  [-1, 1].forEach(function(sign) {
+    const earData = makeSphereData(0.118, 0.138, 0.072, 36, 28, function(x, y, z) {
+      const r2 = Math.pow(x / 0.118, 2) + Math.pow(y / 0.138, 2);
+      if (z > 0 && r2 < 0.56) {
+        const depth = (0.56 - r2) / 0.56;
+        z -= 0.052 * Math.pow(depth, 0.75);
+      }
+      return [x, y, z];
+    });
+    const earVerts = transformVerts(earData.verts, [sign * 0.415, 0.762, -0.01], 0.04, sign * 0.22, sign * -0.14, HEAD_PIVOT_Y);
+    headMasterGroup.add(buildClayMesh(earVerts, earData.indices, function(x, y, z) {
+      const lx = Math.abs(x) - 0.402;
+      const ly = y - 0.762;
+      const r2 = Math.pow(lx / 0.072, 2) + Math.pow(ly / 0.090, 2);
+      if (z > -0.015 && r2 < 0.75) {
+        const w = Math.max(0.0, 1.0 - r2 / 0.75) * 0.85;
+        return [
+          C_SKIN[0] * (1.0 - w) + C_EAR_IN[0] * w,
+          C_SKIN[1] * (1.0 - w) + C_EAR_IN[1] * w,
+          C_SKIN[2] * (1.0 - w) + C_EAR_IN[2] * w
+        ];
+      }
+      return C_SKIN;
+    }, HEAD_PIVOT_Y));
+  });
+
+  // Eyes (with Blinking Groups) & Eyebrows
+  let leftEyeGroup, rightEyeGroup;
+  [-1, 1].forEach(function(sign) {
+    const eyeG = new THREE.Group();
+    eyeG.position.set(sign * 0.125, 0.842 - HEAD_PIVOT_Y, 0.372);
+
+    const ballData = makeSphereData(0.030, 0.044, 0.025, 24, 18);
+    const ballVerts = transformVerts(ballData.verts, [0, 0, 0], 0, sign * 0.08, 0, 0);
+    eyeG.add(buildClayMesh(ballVerts, ballData.indices, C_EYE, 0));
+
+    const glintData = makeSphereData(0.008, 0.008, 0.008, 12, 10);
+    const glintVerts = transformVerts(glintData.verts, [-0.007, 0.014, 0.021], 0, 0, 0, 0);
+    eyeG.add(buildClayMesh(glintVerts, glintData.indices, C_GLINT, 0));
+
+    headMasterGroup.add(eyeG);
+    if (sign === -1) leftEyeGroup = eyeG;
+    else rightEyeGroup = eyeG;
+
+    // Expressive Soft Clay Eyebrows
+    const bpts = [
+      [sign * 0.090, 0.988, 0.365],
+      [sign * 0.142, 0.992, 0.356],
+      [sign * 0.194, 0.976, 0.334]
+    ];
+    const browData = makeCapsuleCurveData(bpts, 0.019, 0.015, 16, 12, 0.60);
+    const browVerts = transformVerts(browData.verts, [0, 0, 0], 0, 0, 0, HEAD_PIVOT_Y);
+    headMasterGroup.add(buildClayMesh(browVerts, browData.indices, C_HAIR, HEAD_PIVOT_Y));
+  });
+
+  // Cute Round-Oval Button Nose
+  const noseData = makeSphereData(0.065, 0.058, 0.060, 28, 22);
+  const noseVerts = transformVerts(noseData.verts, [0, 0.762, 0.396], 0, 0, 0, HEAD_PIVOT_Y);
+  headMasterGroup.add(buildClayMesh(noseVerts, noseData.indices, C_NOSE, HEAD_PIVOT_Y));
+
+  // Gentle Subtle Smile Mouth (slightly lifted corners, warm friendly expression)
+  const mpts = [
+    [-0.044, 0.575, 0.374],
+    [-0.022, 0.568, 0.379],
+    [ 0.000, 0.564, 0.382],
+    [ 0.022, 0.568, 0.379],
+    [ 0.044, 0.575, 0.374]
+  ];
+  const mouthData = makeCapsuleCurveData(mpts, 0.0070, 0.0070, 16, 10);
+  const mouthVerts = transformVerts(mouthData.verts, [0, 0, 0], 0, 0, 0, HEAD_PIVOT_Y);
+  const smileMouthMesh = buildClayMesh(mouthVerts, mouthData.indices, C_HAIR_DARK, HEAD_PIVOT_Y);
+  headMasterGroup.add(smileMouthMesh);
+
+  // ปากอ้าตอนพูด: แผ่นรีแบนบนใบหน้า ย่อ/ขยายตามจังหวะพูด (ซ่อนไว้จนกว่าจะพูด)
+  const talkMouthData = makeSphereData(0.040, 0.034, 0.010, 20, 14);
+  const talkMouthMesh = buildClayMesh(talkMouthData.verts, talkMouthData.indices, C_HAIR_DARK, 0);
+  talkMouthMesh.position.set(0, 0.566 - HEAD_PIVOT_Y, 0.378);
+  talkMouthMesh.visible = false;
+  headMasterGroup.add(talkMouthMesh);
+
+  // ============================================================================
+  // 2. FULL, WIDE-CROWN FLUFFY WAVY HAIR (Zero Face Clipping!)
+  // ============================================================================
+  const hairDomeData = makeSphereData(0.455, 0.380, 0.435, 96, 64, function(x, y, z, phi, theta) {
+    if (y < 0.15 && z > 0.05) {
+      const templeDrop = Math.max(0.0, (Math.abs(x) - 0.22) / 0.20) * 0.15;
+      const lift = Math.max(0.0, 0.12 - templeDrop - y) * (z / 0.43) * 1.15;
+      y += lift;
+      const waveY = 0.024 * Math.cos(x * 18.0 + 0.5) + 0.014 * Math.sin(x * 32.0);
+      y += waveY;
+    }
+    if (y > 0.0) {
+      const crownW = 1.0 + 0.14 * Math.sin(Math.min(1.0, y / 0.35) * Math.PI * 0.75);
+      x *= crownW;
+    }
+    const w1 = 0.032 * Math.sin(phi * 6.0 + theta * 3.0) * Math.sin(theta * 4.0);
+    const w2 = 0.020 * Math.cos(phi * 11.0 - theta * 4.0) * Math.sin(theta * 5.0);
+    const scale = 1.0 + w1 + w2;
+    if (y > 0.10) {
+      const topT = (y - 0.10) / 0.27;
+      const asym = Math.exp(-Math.pow((x + 0.10) / 0.24, 2)) * 0.075 + 0.020;
+      const tuft = asym * (0.6 + 0.4 * Math.sin(x * 14.0 + 0.8)) * Math.pow(topT, 1.1);
+      y += tuft;
+    }
+    return [x * scale, y * scale, z * scale];
+  });
+  const hairDomeVerts = transformVerts(hairDomeData.verts, [0, 1.020, -0.01], 0, 0, 0, HEAD_PIVOT_Y);
+  headMasterGroup.add(buildClayMesh(hairDomeVerts, hairDomeData.indices, C_HAIR, HEAD_PIVOT_Y));
+
+  const softLocks = [
+    [[[-0.32, 1.18, 0.22], [-0.37, 1.04, 0.21], [-0.39, 0.91, 0.16], [-0.38, 0.83, 0.09]], 0.080, 0.025, 0.55],
+    [[[-0.36, 1.16, 0.12], [-0.42, 1.02, 0.10], [-0.42, 0.88, 0.04]], 0.088, 0.028, 0.58],
+    [[[ 0.32, 1.18, 0.22], [ 0.37, 1.04, 0.21], [ 0.39, 0.91, 0.16], [ 0.38, 0.83, 0.09]], 0.080, 0.025, 0.55],
+    [[[ 0.36, 1.16, 0.12], [ 0.42, 1.02, 0.10], [ 0.42, 0.88, 0.04]], 0.088, 0.028, 0.58],
+    [[[-0.36, 1.18, 0.08], [-0.42, 1.28, 0.10], [-0.34, 1.38, 0.08]], 0.095, 0.028, 0.55],
+    [[[ 0.35, 1.18, 0.08], [ 0.40, 1.27, 0.10], [ 0.32, 1.36, 0.08]], 0.092, 0.028, 0.55],
+    [[[-0.27, 1.22, 0.26], [-0.24, 1.13, 0.34], [-0.19, 1.06, 0.37]], 0.080, 0.022, 0.48],
+    [[[-0.15, 1.24, 0.28], [-0.10, 1.14, 0.36], [-0.03, 1.06, 0.39]], 0.090, 0.025, 0.46],
+    [[[-0.02, 1.25, 0.28], [ 0.04, 1.15, 0.36], [ 0.10, 1.07, 0.38]], 0.086, 0.024, 0.46],
+    [[[ 0.16, 1.23, 0.26], [ 0.23, 1.14, 0.33], [ 0.27, 1.08, 0.33]], 0.082, 0.022, 0.48],
+    [[[-0.28, 1.28, 0.14], [-0.16, 1.35, 0.20], [-0.04, 1.33, 0.24]], 0.098, 0.032, 0.55],
+    [[[ 0.02, 1.29, 0.16], [ 0.14, 1.34, 0.20], [ 0.26, 1.28, 0.18]], 0.098, 0.032, 0.55],
+    [[[-0.26, 1.30, 0.04], [-0.22, 1.42, 0.06], [-0.16, 1.48, 0.03]], 0.088, 0.016, 0.50],
+    [[[-0.15, 1.34, 0.07], [-0.11, 1.46, 0.08], [-0.05, 1.50, 0.04]], 0.090, 0.016, 0.50],
+    [[[-0.05, 1.34, 0.07], [ 0.02, 1.43, 0.08], [ 0.09, 1.46, 0.04]], 0.086, 0.018, 0.50],
+    [[[ 0.10, 1.31, 0.05], [ 0.19, 1.38, 0.06], [ 0.27, 1.39, 0.02]], 0.084, 0.020, 0.50],
+    [[[-0.39, 1.20, 0.06], [-0.46, 1.24, 0.07], [-0.49, 1.28, 0.05]], 0.042, 0.010, 0.45],
+    [[[-0.41, 1.05, 0.06], [-0.47, 1.06, 0.07], [-0.50, 1.10, 0.05]], 0.038, 0.009, 0.45],
+    [[[ 0.39, 1.14, 0.06], [ 0.46, 1.15, 0.07], [ 0.50, 1.18, 0.05]], 0.042, 0.010, 0.45],
+    [[[ 0.41, 1.00, 0.05], [ 0.46, 0.99, 0.06], [ 0.49, 1.02, 0.04]], 0.036, 0.009, 0.45]
+  ];
+  softLocks.forEach(function(item) {
+    const lockData = makeCapsuleCurveData(item[0], item[1], item[2], 20, 14, item[3]);
+    const lockVerts = transformVerts(lockData.verts, [0, 0, 0], 0, 0, 0, HEAD_PIVOT_Y);
+    headMasterGroup.add(buildClayMesh(lockVerts, lockData.indices, C_HAIR, HEAD_PIVOT_Y));
+  });
+
+  // ============================================================================
+  // 3. TORSO, WHITE MFEC T-SHIRT, ARMS, SDF SMOOTH-UNION HANDS & WRISTWATCH
+  // ============================================================================
+  const torsoGroup = new THREE.Group();
+  charGroup.add(torsoGroup);
+
+  // Warm Neck sitting snugly inside the crew-neck collar
+  const neckData = makeLatheCylData(0.185, 0.220, 0.18, 32, 10, 0.86);
+  const neckVerts = transformVerts(neckData.verts, [0, 0.385, 0.0], 0, 0, 0, 0);
+  torsoGroup.add(buildClayMesh(neckVerts, neckData.indices, C_SKIN_MID, 0));
+
+  // White T-Shirt Body with MFEC Chest Logo
+  const shirtData = makeLatheCylData(0.420, 0.445, 0.985, 56, 36, 0.67, function(v, r, rz, y) {
+    if (v < 0.24) {
+      const t = v / 0.24;
+      const s = Math.sin(t * Math.PI * 0.5);
+      const sp = Math.pow(s, 0.85);
+      return [0.190 + (0.420 - 0.190) * sp, 0.160 + (0.290 - 0.160) * sp, y];
+    } else {
+      const t = (v - 0.24) / 0.76;
+      const hemRound = 1.0 - 0.03 * Math.pow(Math.max(0.0, (t - 0.90) / 0.10), 2);
+      const curRx = (0.420 + 0.025 * Math.pow(t, 0.7) + 0.012 * Math.sin(t * Math.PI)) * hemRound;
+      const curRz = (0.290 + 0.015 * Math.sin(t * Math.PI * 0.7)) * hemRound;
+      return [curRx, curRz, y];
+    }
+  }, true);
+
+  for (let i = 0; i < shirtData.verts.length; i += 3) {
+    const vx = shirtData.verts[i];
+    const vy = shirtData.verts[i + 1];
+    const vz = shirtData.verts[i + 2];
+    if (vy > 0.10 && vz > -0.02 && Math.abs(vx) < 0.25) {
+      const wy = Math.pow((vy - 0.10) / 0.392, 1.5);
+      const wx = Math.pow(Math.cos((Math.abs(vx) / 0.25) * Math.PI * 0.5), 1.5);
+      const wz = Math.min(1.0, Math.max(0.0, (vz + 0.02) / 0.20));
+      shirtData.verts[i + 1] -= 0.088 * wy * wx * wz;
+    }
+  }
+  const shirtVerts = transformVerts(shirtData.verts, [0, -0.058, 0], 0, 0, 0, 0);
+  const shirtMesh = buildClayMesh(shirtVerts, shirtData.indices, function(x, y) {
+    const fold = Math.sin(x * 16.0) * Math.max(0.0, (-0.22 - y) / 0.32) * 0.024;
+    return [
+      Math.min(1.0, Math.max(0.0, C_SHIRT[0] + fold)),
+      Math.min(1.0, Math.max(0.0, C_SHIRT[1] + fold)),
+      Math.min(1.0, Math.max(0.0, C_SHIRT[2] + fold))
+    ];
+  }, 0);
+  shirtMesh.material = shirtClayMaterial;
+  torsoGroup.add(shirtMesh);
+
+  // Ribbed Crew-Neck Collar
+  const colPts = [];
+  for (let i = 0; i <= 40; i++) {
+    const ang = (i / 40) * 2.0 * Math.PI;
+    colPts.push([
+      -0.198 * Math.cos(ang),
+      0.430 - 0.092 * Math.pow(Math.max(0.0, Math.sin(ang)), 1.25),
+      0.168 * Math.sin(ang)
+    ]);
+  }
+  const colData = makeCapsuleCurveData(colPts, 0.032, 0.032, 44, 14);
+  torsoGroup.add(buildClayMesh(colData.verts, colData.indices, C_SHIRT_DK, 0));
+
+  // SDF Smooth-Union (smin) Clay Hand Evaluators for Ultra-Smooth, Seamless Clay Hands
+  function sminClay(a, b, k) {
+    const h = Math.max(k - Math.abs(a - b), 0.0) / k;
+    return Math.min(a, b) - h * h * k * 0.25;
+  }
+
+  function sdTaperedCap(px, py, pz, ax, ay, az, bx, by, bz, ra, rb) {
+    const bax = bx - ax, bay = by - ay, baz = bz - az;
+    const pax = px - ax, pay = py - ay, paz = pz - az;
+    const baba = bax * bax + bay * bay + baz * baz;
+    const h = Math.min(1.0, Math.max(0.0, (pax * bax + pay * bay + paz * baz) / baba));
+    const dx = pax - h * bax, dy = pay - h * bay, dz = paz - h * baz;
+    const r = ra * (1.0 - h) + rb * h;
+    return Math.hypot(dx, dy, dz) - r;
+  }
+
+  function sdEllipsoidSeg(px, py, pz, ax, ay, az, bx, by, bz, rxa, rza, rxb, rzb) {
+    const bax = bx - ax, bay = by - ay, baz = bz - az;
+    const pax = px - ax, pay = py - ay, paz = pz - az;
+    const h = Math.min(1.0, Math.max(0.0, (pax * bax + pay * bay + paz * baz) / (bax * bax + bay * bay + baz * baz)));
+    const dx = pax - h * bax, dy = pay - h * bay, dz = paz - h * baz;
+    const rx = rxa * (1.0 - h) + rxb * h + 0.008 * Math.sin(h * Math.PI);
+    const rz = rza * (1.0 - h) + rzb * h;
+    const rm = Math.sqrt(rx * rz);
+    return (Math.hypot(dx / rx, dy / rm, dz / rz) - 1.0) * rm;
+  }
+
+  function evalHandSdf(px, py, pz, sign) {
+    const dArmPalm = sdEllipsoidSeg(
+      px, py, pz,
+      sign * 0.504, -0.165, 0.004,
+      sign * 0.538, -0.555, 0.014,
+      0.118, 0.102, 0.070, 0.040
+    );
+    const dTh1 = sdTaperedCap(px, py, pz, sign * 0.476, -0.475, 0.020, sign * 0.445, -0.558, 0.032, 0.034, 0.028);
+    const dTh2 = sdTaperedCap(px, py, pz, sign * 0.445, -0.558, 0.032, sign * 0.449, -0.638, 0.030, 0.028, 0.025);
+    const dThumb = sminClay(dTh1, dTh2, 0.016);
+    let d = sminClay(dArmPalm, dThumb, 0.030);
+
+    const fSpecs = [
+      [0.502, -0.525, 0.024, 0.495, -0.608, 0.025, 0.482, -0.686, 0.024, 0.028, 0.027, 0.025],
+      [0.534, -0.522, 0.021, 0.527, -0.612, 0.022, 0.512, -0.702, 0.021, 0.029, 0.028, 0.026],
+      [0.564, -0.526, 0.011, 0.557, -0.608, 0.012, 0.542, -0.684, 0.011, 0.028, 0.027, 0.025],
+      [0.588, -0.534, -0.003, 0.581, -0.598, -0.002, 0.566, -0.654, -0.002, 0.025, 0.024, 0.022]
+    ];
+    let dFingers = 1e9;
+    for (let i = 0; i < fSpecs.length; i++) {
+      const fs = fSpecs[i];
+      const df1 = sdTaperedCap(px, py, pz, sign * fs[0], fs[1], fs[2], sign * fs[3], fs[4], fs[5], fs[9], fs[10]);
+      const df2 = sdTaperedCap(px, py, pz, sign * fs[3], fs[4], fs[5], sign * fs[6], fs[7], fs[8], fs[10], fs[11]);
+      const df = sminClay(df1, df2, 0.014);
+      dFingers = (i === 0) ? df : sminClay(dFingers, df, 0.003);
+    }
+    return sminClay(d, dFingers, 0.032);
+  }
+
+  function evalHandSdfGrad(px, py, pz, sign) {
+    const eps = 1e-4;
+    const dx = evalHandSdf(px + eps, py, pz, sign) - evalHandSdf(px - eps, py, pz, sign);
+    const dy = evalHandSdf(px, py + eps, pz, sign) - evalHandSdf(px, py - eps, pz, sign);
+    const dz = evalHandSdf(px, py, pz + eps, sign) - evalHandSdf(px, py, pz - eps, sign);
+    const len = Math.max(Math.hypot(dx, dy, dz), 1e-8);
+    return [dx / len, dy / len, dz / len];
+  }
+
+  function buildSdfHandMesh(sign, elPivotX, elPivotY) {
+    const avData = makeLatheCylData(0.118, 0.070, 0.410, 44, 30, 0.86, null, true);
+    const avVerts = transformVerts(avData.verts, [sign * 0.520, -0.365, 0.010], 0, 0, 0, 0);
+
+    const tpts = [
+      [sign * 0.476, -0.475, 0.020],
+      [sign * 0.445, -0.558, 0.032],
+      [sign * 0.449, -0.638, 0.030]
+    ];
+    const tvData = makeCapsuleCurveData(tpts, 0.034, 0.025, 22, 18, 1.0);
+
+    const fSpecs = [
+      [[[sign * 0.502, -0.525, 0.024], [sign * 0.495, -0.608, 0.025], [sign * 0.482, -0.686, 0.024]], 0.028, 0.025],
+      [[[sign * 0.534, -0.522, 0.021], [sign * 0.527, -0.612, 0.022], [sign * 0.512, -0.702, 0.021]], 0.029, 0.026],
+      [[[sign * 0.564, -0.526, 0.011], [sign * 0.557, -0.608, 0.012], [sign * 0.542, -0.684, 0.011]], 0.028, 0.025],
+      [[[sign * 0.588, -0.534, -0.003], [sign * 0.581, -0.598, -0.002], [sign * 0.566, -0.654, -0.002]], 0.025, 0.022]
+    ];
+
+    const parts = [
+      { verts: avVerts, indices: avData.indices },
+      { verts: tvData.verts, indices: tvData.indices }
+    ];
+    fSpecs.forEach(function(fs) {
+      parts.push(makeCapsuleCurveData(fs[0], fs[1], fs[2], 22, 18, 1.0));
+    });
+
+    let totalFloats = 0;
+    parts.forEach(function(p) { totalFloats += p.verts.length; });
+    const combVerts = new Float32Array(totalFloats);
+    const combIndices = [];
+    let vFloatOff = 0;
+    let vCountOff = 0;
+    parts.forEach(function(p) {
+      combVerts.set(p.verts, vFloatOff);
+      for (let i = 0; i < p.indices.length; i++) {
+        combIndices.push(p.indices[i] + vCountOff);
+      }
+      vFloatOff += p.verts.length;
+      vCountOff += p.verts.length / 3;
+    });
+
+    const nVerts = combVerts.length / 3;
+    const combNorms = new Float32Array(combVerts.length);
+    const combCols = new Float32Array(combVerts.length);
+
+    for (let i = 0; i < nVerts; i++) {
+      let px = combVerts[i * 3];
+      let py = combVerts[i * 3 + 1];
+      let pz = combVerts[i * 3 + 2];
+      // 3 Newton steps onto the exact C-infinity SDF Smooth-Union clay surface
+      for (let step = 0; step < 3; step++) {
+        const d = evalHandSdf(px, py, pz, sign);
+        const g = evalHandSdfGrad(px, py, pz, sign);
+        px -= d * g[0];
+        py -= d * g[1];
+        pz -= d * g[2];
+      }
+      const g = evalHandSdfGrad(px, py, pz, sign);
+      let nx = g[0], ny = g[1], nz = g[2];
+      if (py < -0.55) {
+        nz += 0.08;
+        const nl = Math.max(Math.hypot(nx, ny, nz), 1e-8);
+        nx /= nl; ny /= nl; nz /= nl;
+      }
+      combVerts[i * 3]     = px - elPivotX;
+      combVerts[i * 3 + 1] = py - elPivotY;
+      combVerts[i * 3 + 2] = pz;
+      combNorms[i * 3]     = nx;
+      combNorms[i * 3 + 1] = ny;
+      combNorms[i * 3 + 2] = nz;
+      combCols[i * 3]      = C_SKIN[0];
+      combCols[i * 3 + 1]  = C_SKIN[1];
+      combCols[i * 3 + 2]  = C_SKIN[2];
+    }
+
+    const geom = new THREE.BufferGeometry();
+    geom.setAttribute('position', new THREE.BufferAttribute(combVerts, 3));
+    geom.setAttribute('normal', new THREE.BufferAttribute(combNorms, 3));
+    geom.setAttribute('color', new THREE.BufferAttribute(combCols, 3));
+    geom.setIndex(combIndices);
+    return new THREE.Mesh(geom, clayMaterial);
+  }
+
+  // Articulated Sleeves, Forearms, Smooth-Union Clay Hands & Wristwatch
+  let leftArmRig, rightArmRig;
+  [-1, 1].forEach(function(sign) {
+    const armHolder = new THREE.Group();
+    const shPivotX = sign * 0.275;
+    const shPivotY = 0.195;
+    armHolder.position.set(shPivotX, shPivotY, 0);
+
+    // Spherical Shoulder Ball Cap centered at (0,0,0) so rotation never creates a gap or horn
+    const shBallData = makeSphereData(0.142, 0.142, 0.122, 24, 18);
+    armHolder.add(buildClayMesh(shBallData.verts, shBallData.indices, C_SHIRT, 0));
+
+    // Continuous Shoulder-to-Cuff Sleeve Spline
+    const slvPts = [
+      [0.0, 0.0, 0.0],
+      [sign * 0.34 - shPivotX,  0.17 - shPivotY, 0.0],
+      [sign * 0.43 - shPivotX,  0.03 - shPivotY, 0.0],
+      [sign * 0.502 - shPivotX, -0.16 - shPivotY, 0.0]
+    ];
+    const slvData = makeCapsuleCurveData(slvPts, 0.138, 0.198, 28, 28, 0.86, function(u) {
+      return 0.138 + 0.060 * Math.pow(u, 0.75);
+    });
+    armHolder.add(buildClayMesh(slvData.verts, slvData.indices, C_SHIRT, 0));
+
+    // Thick Flat-Band Rolled Sleeve Cuff
+    const cuffData = makeCuffData(0.208, 0.185, 0.092, 0.018, 36, 14);
+    const cuffVerts = transformVerts(cuffData.verts, [sign * 0.502 - shPivotX, -0.170 - shPivotY, 0.0], 0, 0, sign * 0.27, 0);
+    armHolder.add(buildClayMesh(cuffVerts, cuffData.indices, C_SHIRT_DK, 0));
+
+    // Forearm & SDF Smooth-Union Clay Hand Group
+    const elPivotX = sign * 0.502;
+    const elPivotY = -0.170;
+    const forearmGroup = new THREE.Group();
+    forearmGroup.position.set(elPivotX - shPivotX, elPivotY - shPivotY, 0);
+
+    // Internal Elbow Ball Joint tucked inside the cuff so forearm rotation never exposes a seam
+    const elBallData = makeSphereData(0.112, 0.112, 0.098, 20, 14);
+    forearmGroup.add(buildClayMesh(elBallData.verts, elBallData.indices, C_SKIN, 0));
+
+    forearmGroup.add(buildSdfHandMesh(sign, elPivotX, elPivotY));
+
+    // Matte Black Wristwatch on Viewer's RIGHT Wrist (sign === 1, character's left hand)
+    if (sign === 1) {
+      const wBandData = makeCuffData(0.106, 0.096, 0.056, 0.008, 28, 10);
+      const wBandVerts = transformVerts(wBandData.verts, [0.525 - elPivotX, -0.460 - elPivotY, 0.012], 0, 0, 0, 0);
+      forearmGroup.add(buildClayMesh(wBandVerts, wBandData.indices, C_WATCH, 0));
+
+      const wCaseData = makeRoundedBoxData(0.044, 0.048, 0.054, 12);
+      const wCaseVerts = transformVerts(wCaseData.verts, [0.618 - elPivotX, -0.460 - elPivotY, 0.015], 0, 0, 0, 0);
+      forearmGroup.add(buildClayMesh(wCaseVerts, wCaseData.indices, C_WATCH, 0));
+    }
+
+    armHolder.add(forearmGroup);
+    torsoGroup.add(armHolder);
+
+    if (sign === -1) leftArmRig = { armHolder: armHolder, forearmGroup: forearmGroup };
+    else rightArmRig = { armHolder: armHolder, forearmGroup: forearmGroup };
+  });
+
+  // ============================================================================
+  // 4. KHAKI SHORTS, SHINS & CHUNKY CREAM SNEAKERS
+  // ============================================================================
+  const shortsGroup = new THREE.Group();
+  charGroup.add(shortsGroup);
+
+  const groinData = makeLatheCylData(0.16, 0.12, 0.20, 20, 6, 0.65);
+  const groinVerts = transformVerts(groinData.verts, [0, -0.72, -0.03], 0, 0, 0, 0);
+  shortsGroup.add(buildClayMesh(groinVerts, groinData.indices, C_SHORTS_DK, 0));
+
+  [-1, 1].forEach(function(sign) {
+    // Khaki Shorts Leg
+    const slegData = makeLatheCylData(0.202, 0.198, 0.33, 36, 16, 0.92, function(v, r, rz, y) {
+      const wHip = 1.0 + 0.11 * Math.pow(1.0 - v, 1.1);
+      return [r * wHip, rz, y];
+    }, true);
+    const slegVerts = transformVerts(slegData.verts, [sign * 0.208, -0.675, 0], 0, 0, 0, 0);
+    shortsGroup.add(buildClayMesh(slegVerts, slegData.indices, C_SHORTS, 0));
+
+    // Thick Flat-Band Rolled Shorts Cuff
+    const scData = makeCuffData(0.214, 0.200, 0.105, 0.020, 36, 14);
+    const scVerts = transformVerts(scData.verts, [sign * 0.214, -0.862, 0], 0, 0, 0, 0);
+    shortsGroup.add(buildClayMesh(scVerts, scData.indices, C_SHORTS_CUF, 0));
+
+    // Lower Leg (Shin)
+    const shinData = makeLatheCylData(0.130, 0.108, 0.36, 28, 14, 0.95);
+    const shinVerts = transformVerts(shinData.verts, [sign * 0.214, -1.07, 0], 0, 0, 0, 0);
+    shortsGroup.add(buildClayMesh(shinVerts, shinData.indices, C_SKIN_MID, 0));
+
+    // Sculpted 3/4-Stance Chunky Cream Sneakers
+    const footAng = sign * 0.46;
+    const fx = sign * 0.275;
+    const fz = 0.088;
+
+    // Outsole
+    const soleData = makeCuffData(0.182, 0.325, 0.095, 0.016, 44, 12);
+    const soleVerts = transformVerts(soleData.verts, [fx, -1.442, fz], 0, footAng, 0, 0);
+    shortsGroup.add(buildClayMesh(soleVerts, soleData.indices, C_SHOE_SOLE, 0));
+
+    // Midsole Horizontal Groove Line
+    const grooveData = makeCuffData(0.184, 0.327, 0.009, 0.002, 44, 6);
+    const grooveVerts = transformVerts(grooveData.verts, [fx, -1.440, fz], 0, footAng, 0, 0);
+    shortsGroup.add(buildClayMesh(grooveVerts, grooveData.indices, C_SHOE_LINE, 0));
+
+    // Unified Sneaker Upper
+    const upData = makeSphereData(0.172, 0.185, 0.310, 48, 32, function(x, y, z) {
+      if (y < -0.05) y = -0.05 + (y + 0.05) * 0.22;
+      if (z > 0) x *= (1.0 + 0.08 * Math.sin((z / 0.310) * Math.PI));
+      if (y > 0) {
+        const tz = Math.min(1.0, Math.max(0.0, (z + 0.02) / 0.30));
+        const slope = 1.0 - 0.56 * Math.pow(tz, 0.85);
+        y *= slope;
+        const dip = Math.exp(-Math.pow((z + 0.05) / 0.085, 2)) * (Math.abs(x) / 0.165);
+        y -= 0.032 * dip;
+      }
+      return [x, y, z];
+    });
+    const upVerts = transformVerts(upData.verts, [fx, -1.335, fz], 0, footAng, 0, 0);
+    shortsGroup.add(buildClayMesh(upVerts, upData.indices, C_SHOE, 0));
+
+    // Sculpted Cream Ankle Collar
+    const colSData = makeSphereData(0.148, 0.095, 0.155, 32, 20, function(x, y, z) {
+      if (y > 0) {
+        y -= (Math.abs(x) / 0.148) * 0.028;
+      }
+      return [x, y, z];
+    });
+    const colSVerts = transformVerts(colSData.verts, [sign * 0.220, -1.235, -0.015], 0, footAng, 0, 0);
+    shortsGroup.add(buildClayMesh(colSVerts, colSData.indices, C_SHOE, 0));
+
+    // Smooth Rounded Padded Sneaker Tongue in Front of Shin
+    const tngData = makeSphereData(0.088, 0.098, 0.038, 28, 20);
+    const tngVerts = transformVerts(tngData.verts, [sign * 0.246, -1.168, 0.102], 0.20, footAng, 0, 0);
+    shortsGroup.add(buildClayMesh(tngVerts, tngData.indices, C_SHOE, 0));
+
+    // Raised Left & Right Eyestay Panels
+    [-1, 1].forEach(function(esSign) {
+      const esPts = [
+        [esSign * 0.080, -1.185, 0.01],
+        [esSign * 0.076, -1.235, 0.08],
+        [esSign * 0.068, -1.275, 0.15]
+      ];
+      const esData = makeCapsuleCurveData(esPts, 0.025, 0.021, 12, 10);
+      const esVerts = transformVerts(esData.verts, [fx, 0, fz], 0, footAng, 0, 0);
+      shortsGroup.add(buildClayMesh(esVerts, esData.indices, C_SHOE_SHAD, 0));
+    });
+
+    // 3 Thick Crisscrossing Cream Shoelaces
+    for (let li = 0; li < 3; li++) {
+      const ly0 = -1.192 - li * 0.034;
+      const lz0 = 0.025 + li * 0.052;
+      const ly1 = ly0 - 0.018;
+      const lz1 = lz0 + 0.030;
+      [-1, 1].forEach(function(lDir) {
+        const lpts = [
+          [-lDir * 0.072, ly0, lz0],
+          [ 0.0, (ly0 + ly1) * 0.5 + 0.020, (lz0 + lz1) * 0.5 + 0.022],
+          [ lDir * 0.072, ly1, lz1]
+        ];
+        const lData = makeCapsuleCurveData(lpts, 0.020, 0.020, 12, 10, 0.65);
+        const lVerts = transformVerts(lData.verts, [fx, 0, fz], 0, footAng, 0, 0);
+        shortsGroup.add(buildClayMesh(lVerts, lData.indices, C_LACE, 0));
+      });
+    }
+  });
+
+  // 5. Theme Sync
+  function applyThemeMode(lightMode) {
+    if (lightMode) {
+      shadowMat.color.setHex(0x64748b);
+      shadowMat.opacity = 0.18;
+    } else {
+      shadowMat.color.setHex(0x000000);
+      shadowMat.opacity = 0.32;
+    }
+  }
+
+  applyThemeMode(isCurrentLight());
+
+  window.addEventListener('pika-theme-changed', (e) => {
+    applyThemeMode(e.detail && e.detail.theme === 'light');
+  });
+
+  const themeObserver = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === 'data-theme') {
+        applyThemeMode(isCurrentLight());
+      }
+    });
+  });
+  themeObserver.observe(document.documentElement, { attributes: true });
+
+  // 6. Interactive Physics & Natural 3D Hand Reach-and-Click Kinematics
+  let isDragging = false;
+  let lastMouseX = 0;
+  let lastMouseY = 0;
+  let dragRotY = 0;
+  let dragRotX = 0;
+
+  let targetLookY = 0;
+  let targetLookX = 0;
+  let curLookY = 0;
+  let curLookX = 0;
+
+  // 3D Tactile Click Ripple Ring at Fingertip Contact Point
+  const tapRippleGroup = new THREE.Group();
+  rootGroup.add(tapRippleGroup);
+  const tapRingMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.0, side: THREE.DoubleSide });
+  const tapCoreMat = new THREE.MeshBasicMaterial({ color: 0xe0f2fe, transparent: true, opacity: 0.0, side: THREE.DoubleSide });
+  const tapRingMesh = new THREE.Mesh(new THREE.RingGeometry(0.05, 0.085, 32), tapRingMat);
+  const tapCoreMesh = new THREE.Mesh(new THREE.CircleGeometry(0.045, 24), tapCoreMat);
+  tapRippleGroup.add(tapRingMesh);
+  tapRippleGroup.add(tapCoreMesh);
+  let tapRippleTimer = 0;
+
+  let hoveredProjectId = null;
+  const projectAngles = {
+    'MFEC-TOWER-01': {
+      side: 'left', sign: -1, slot: 0,
+      armZ: -0.78, armX: -0.18, armY: 0.08,
+      foreZ: -0.08, foreX: -0.14, foreY: 0.06,
+      bodyRotY: 0.20, bodyLeanZ: 0.055, bodyShiftX: -0.065,
+      headY: -0.42, headX: -0.14, headZ: 0.07,
+      tapPos: [-1.05, 0.35, 0.30],
+      name: 'Transmission Tower AI'
+    },
+    'ACME-GCP-02': {
+      side: 'left', sign: -1, slot: 1,
+      armZ: -0.58, armX: -0.16, armY: 0.06,
+      foreZ: -0.06, foreX: -0.12, foreY: 0.05,
+      bodyRotY: 0.22, bodyLeanZ: 0.045, bodyShiftX: -0.075,
+      headY: -0.45, headX: 0.02, headZ: 0.06,
+      tapPos: [-1.08, -0.05, 0.30],
+      name: 'Acme Corp Cloud'
+    },
+    'CHRONOS-FIN-03': {
+      side: 'left', sign: -1, slot: 2,
+      armZ: -0.38, armX: -0.14, armY: 0.05,
+      foreZ: -0.04, foreX: -0.10, foreY: 0.04,
+      bodyRotY: 0.18, bodyLeanZ: 0.035, bodyShiftX: -0.055,
+      headY: -0.38, headX: 0.16, headZ: 0.05,
+      tapPos: [-0.98, -0.42, 0.30],
+      name: 'Project Chronos Core'
+    },
+    'ACTION-NEW-PROJECT': {
+      side: 'left', sign: -1, slot: 1,
+      armZ: -0.62, armX: -0.16, armY: 0.06,
+      foreZ: -0.07, foreX: -0.12, foreY: 0.05,
+      bodyRotY: 0.23, bodyLeanZ: 0.050, bodyShiftX: -0.078,
+      headY: -0.46, headX: 0.02, headZ: 0.06,
+      tapPos: [-1.08, -0.05, 0.30],
+      name: 'Create New Project'
+    },
+    'GOV-ZERO-04': {
+      side: 'right', sign: 1, slot: 0,
+      armZ: 0.78, armX: -0.18, armY: -0.08,
+      foreZ: 0.08, foreX: -0.14, foreY: -0.06,
+      bodyRotY: -0.20, bodyLeanZ: -0.055, bodyShiftX: 0.065,
+      headY: 0.42, headX: -0.14, headZ: -0.07,
+      tapPos: [1.05, 0.35, 0.30],
+      name: 'GovCloud Zero-Trust'
+    },
+    'MOPH-MESH-05': {
+      side: 'right', sign: 1, slot: 1,
+      armZ: 0.58, armX: -0.16, armY: -0.06,
+      foreZ: 0.06, foreX: -0.12, foreY: -0.05,
+      bodyRotY: -0.22, bodyLeanZ: -0.045, bodyShiftX: 0.075,
+      headY: 0.45, headX: 0.02, headZ: -0.06,
+      tapPos: [1.08, -0.05, 0.30],
+      name: 'MOPH Health Mesh'
+    },
+    'BOT-SWITCH-06': {
+      side: 'right', sign: 1, slot: 2,
+      armZ: 0.38, armX: -0.14, armY: -0.05,
+      foreZ: 0.04, foreX: -0.10, foreY: -0.04,
+      bodyRotY: -0.18, bodyLeanZ: -0.035, bodyShiftX: 0.055,
+      headY: 0.38, headX: 0.16, headZ: -0.05,
+      tapPos: [0.98, -0.42, 0.30],
+      name: 'BOT Settlement Core'
+    },
+    'ACTION-TOR-INGEST': {
+      side: 'right', sign: 1, slot: 1,
+      armZ: 0.62, armX: -0.16, armY: -0.06,
+      foreZ: 0.07, foreX: -0.12, foreY: -0.05,
+      bodyRotY: -0.23, bodyLeanZ: -0.050, bodyShiftX: 0.078,
+      headY: 0.46, headX: 0.02, headZ: -0.06,
+      tapPos: [1.08, -0.05, 0.30],
+      name: 'TOR & Document Ingestion'
+    }
+  };
+
+  // ท่าเอื้อมมือผูกกับ "ตำแหน่ง" ของการ์ด ไม่ใช่ id — projectAngles ข้างบนมีแค่ id
+  // ของข้อมูลตัวอย่าง โปรเจกต์จริง (hospital-project ฯลฯ) จึงตกไปใช้ท่าซ้ายบนทุกตัว
+  const SLOT_POSES = {
+    left: [projectAngles['MFEC-TOWER-01'], projectAngles['ACME-GCP-02'], projectAngles['CHRONOS-FIN-03']],
+    right: [projectAngles['GOV-ZERO-04'], projectAngles['MOPH-MESH-05'], projectAngles['BOT-SWITCH-06']]
+  };
+  const SLOT_CLASSES = ['slot-top', 'slot-mid', 'slot-bot'];
+
+  function poseFor(pId) {
+    if (!pId) return null;
+    const card = document.querySelector('.wiki-project-link[data-id="' + CSS.escape(pId) + '"]');
+    if (card) {
+      const side = card.classList.contains('link-right') ? 'right' : 'left';
+      const slot = Math.max(0, SLOT_CLASSES.findIndex(c => card.classList.contains(c)));
+      return SLOT_POSES[side][slot];
+    }
+    return projectAngles[pId] || null;   // การ์ด action ตอนยังไม่มีโปรเจกต์
+  }
+
+  function minJerk(t) {
+    const c = Math.min(1.0, Math.max(0.0, t));
+    return c * c * c * (10.0 + c * (-15.0 + 6.0 * c));
+  }
+
+  let reachAnim = {
+    active: false,
+    t: 0,
+    duration: 0.86,
+    firedImpact: false,
+    target: null,
+    id: null
+  };
+
+  // โบกมือทักทายด้วยแขนซ้ายของจอ (กล่องคำพูดอยู่ฝั่งขวา มือจะได้ไม่ลอดหลังกล่อง)
+  let waveAnim = { active: false, t: 0, duration: 2.7 };
+
+  function startWave() {
+    if (reachAnim.active || waveAnim.active || isDragging) return;
+    waveAnim.active = true;
+    waveAnim.t = 0;
+  }
+
+  // ขยับปากเหมือนกำลังพูดตอนเข้าหน้า พร้อมกล่องคำพูด
+  let talkAnim = { active: false, t: 0, duration: 2.4 };
+
+  let activeCompanionTarget = projectAngles['MFEC-TOWER-01'];
+  let nodTimer = 0;
+
+  let curCharRotY = 0;
+  let curCharShiftX = 0;
+  let curCharLeanZ = 0;
+  let curTorsoLeanZ = 0;
+  let curHeadRotY = 0;
+  let curHeadRotX = 0;
+  let curHeadRotZ = 0;
+
+  let curLeftArmX = 0, curLeftArmY = 0, curLeftArmZ = 0;
+  let curLeftForeX = 0, curLeftForeY = 0, curLeftForeZ = 0, curLeftForeTwist = 0;
+  let curRightArmX = 0, curRightArmY = 0, curRightArmZ = 0;
+  let curRightForeX = 0, curRightForeY = 0, curRightForeZ = 0;
+
+  // Support both 6 floating links and empty state action cards dynamically
+  document.addEventListener('mouseover', (e) => {
+    const link = e.target.closest('.wiki-project-link, .wiki-empty-wing-card');
+    if (!link) return;
+    const pId = link.getAttribute('data-id');
+    const tgt = poseFor(pId);
+    if (tgt && !reachAnim.active) {
+      hoveredProjectId = pId;
+      targetLookY = tgt.headY * 0.85;
+      targetLookX = tgt.headX * 0.85;
+    }
+  });
+
+  document.addEventListener('mouseout', (e) => {
+    const link = e.target.closest('.wiki-project-link, .wiki-empty-wing-card');
+    if (link && hoveredProjectId === link.getAttribute('data-id')) {
+      const rel = e.relatedTarget;
+      if (!rel || !link.contains(rel)) {
+        hoveredProjectId = null;
+      }
+    }
+  });
+
+  window.addEventListener('pika-project-reach-click', (e) => {
+    const pId = e.detail && e.detail.id;
+    const tgt = poseFor(pId) || projectAngles['MFEC-TOWER-01'];
+    activeCompanionTarget = tgt;
+    waveAnim.active = false;
+    reachAnim.active = true;
+    reachAnim.t = 0;
+    reachAnim.duration = 0.84;
+    reachAnim.firedImpact = false;
+    reachAnim.target = tgt;
+    reachAnim.id = pId;
+  });
+
+  let currentPose = 'wave';
+  let poseTimer = 0;
+
+  function applyMascotPose(newPose, project) {
+    if (!newPose) return;
+    currentPose = newPose;
+    poseTimer = 0;
+    waveAnim.active = false; // Immediately cancel waving so arm comes down into new pose
+    reachAnim.active = false;
+
+    if (newPose === 'wave') {
+      // Wave is handled smoothly via poseTimer in animation loop
+    } else if (newPose === 'reach_click') {
+      const pId = project || 'presale-mock';
+      const tgt = poseFor(pId) || projectAngles['MFEC-TOWER-01'];
+      activeCompanionTarget = tgt;
+      reachAnim.active = true;
+      reachAnim.t = 0;
+      reachAnim.duration = 0.84;
+      reachAnim.firedImpact = false;
+      reachAnim.target = tgt;
+      reachAnim.id = pId;
+    }
+  }
+
+  window.addEventListener('pika-pose-change', (e) => {
+    if (e.detail && e.detail.pose) {
+      applyMascotPose(e.detail.pose, e.detail.project);
+    }
+  });
+
+  window.addEventListener('pika-mascot-pose', (e) => {
+    if (e.detail && e.detail.pose) {
+      applyMascotPose(e.detail.pose, e.detail.project);
+    }
+  });
+
+  window.addEventListener('pika-mascot-reach', (e) => {
+    const pId = (e.detail && e.detail.projectId) || 'presale-mock';
+    applyMascotPose('reach_click', pId);
+  });
+
+  window.addEventListener('pika-mascot-talk', (e) => {
+    const isSpeaking = e.detail && (e.detail.speaking !== undefined ? e.detail.speaking : e.detail.active);
+    if (isSpeaking) {
+      talkAnim.active = true;
+      talkAnim.t = 0;
+      talkAnim.duration = 999;
+    } else {
+      talkAnim.active = false;
+    }
+  });
+
+  window.addEventListener('pika-modal-closed', () => {
+    nodTimer = 0.55;
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+      const dx = e.clientX - lastMouseX;
+      const dy = e.clientY - lastMouseY;
+      dragRotY += dx * 0.007;
+      dragRotX = Math.max(-0.35, Math.min(0.35, dragRotX + dy * 0.007));
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+    } else if (hoveredProjectId === null && !reachAnim.active) {
+      const nx = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
+      const ny = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
+      targetLookY = nx * 0.34;
+      targetLookX = ny * 0.18;
+    }
+  });
+
+  const dragZone = document.getElementById('mascotDragZone') || universe;
+  dragZone.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    lastMouseX = e.clientX;
+    lastMouseY = e.clientY;
+  });
+  dragZone.addEventListener('mouseenter', startWave);
+  window.addEventListener('mouseup', () => { isDragging = false; });
+
+  dragZone.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      isDragging = true;
+      lastMouseX = e.touches[0].clientX;
+      lastMouseY = e.touches[0].clientY;
+    }
+  }, { passive: true });
+  window.addEventListener('touchend', () => { isDragging = false; });
+  window.addEventListener('touchmove', (e) => {
+    if (isDragging && e.touches.length === 1) {
+      const dx = e.touches[0].clientX - lastMouseX;
+      const dy = e.touches[0].clientY - lastMouseY;
+      dragRotY += dx * 0.007;
+      dragRotX = Math.max(-0.35, Math.min(0.35, dragRotX + dy * 0.007));
+      lastMouseX = e.touches[0].clientX;
+      lastMouseY = e.touches[0].clientY;
+    }
+  }, { passive: true });
+
+  // 7. 60FPS Kinematic Loop with Natural Biomechanical Hand Reach & Tap
+  let time = 0;
+  let blinkTimer = 0;
+  let eyeScaleY = 1.0;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const dt = 0.016;
+    time += dt;
+
+    // Eye Blinking
+    blinkTimer += dt;
+    if (blinkTimer > 4.2) {
+      eyeScaleY = 0.08;
+      if (blinkTimer > 4.34) {
+        eyeScaleY = 1.0;
+        blinkTimer = 0;
+      }
+    } else {
+      eyeScaleY = 1.0;
+    }
+    if (leftEyeGroup) leftEyeGroup.scale.y = eyeScaleY;
+    if (rightEyeGroup) rightEyeGroup.scale.y = eyeScaleY;
+
+    // ปากขยับตามพยางค์ แล้วกลับเป็นยิ้มเมื่อพูดจบ
+    let mouthOpen = 0;
+    if (talkAnim.active) {
+      talkAnim.t += dt;
+      const fade = Math.min(1.0, talkAnim.t / 0.15, (talkAnim.duration - talkAnim.t) / 0.25);
+      mouthOpen = Math.max(0, fade) * Math.abs(Math.sin(talkAnim.t * 9.0)) * (0.6 + 0.4 * Math.sin(talkAnim.t * 3.1));
+      if (talkAnim.t >= talkAnim.duration) talkAnim.active = false;
+    }
+    talkMouthMesh.visible = mouthOpen > 0.12;
+    smileMouthMesh.visible = !talkMouthMesh.visible;
+    talkMouthMesh.scale.set(0.8 + 0.2 * mouthOpen, Math.max(0.15, mouthOpen), 1.0);
+
+    // Keep 3D fingertip free of artificial colored rings
+    tapRingMat.opacity = 0;
+    tapCoreMat.opacity = 0;
+
+    // Target joint angles for this frame
+    let tgtBodyRotY = 0, tgtBodyShiftX = 0, tgtTorsoLeanZ = 0, tgtCharLeanZ = 0;
+    let tgtHeadY = 0, tgtHeadX = 0, tgtHeadZ = 0;
+    let tgtLArmX = 0, tgtLArmY = 0, tgtLArmZ = 0;
+    let tgtLForeX = 0, tgtLForeY = 0, tgtLForeZ = 0, tgtLForeTwist = 0;
+    let tgtRArmX = 0, tgtRArmY = 0, tgtRArmZ = 0;
+    let tgtRForeX = 0, tgtRForeY = 0, tgtRForeZ = 0;
+
+    if (reachAnim.active && reachAnim.target) {
+      reachAnim.t += dt;
+      const u = Math.min(1.0, reachAnim.t / reachAnim.duration);
+      const tgt = reachAnim.target;
+
+      // 1. Eye & Head Lead (arrives early, stays locked during tap, gently relaxes)
+      const headLead = u < 0.72 ? minJerk(u / 0.26) : (1.0 - 0.55 * minJerk((u - 0.72) / 0.28));
+      // 2. Shoulder & Arm Reach Envelope
+      let reachW = 0;
+      if (u < 0.46) {
+        reachW = minJerk(Math.max(0, (u - 0.03) / 0.43));
+      } else if (u < 0.58) {
+        reachW = 1.0;
+      } else {
+        reachW = 1.0 - 0.86 * minJerk((u - 0.58) / 0.42);
+      }
+
+      // 3. Subtle Elbow Lift Arc (kept within cuff tolerance so forearm never separates)
+      const liftArc = (u < 0.46)
+        ? Math.sin((u / 0.46) * Math.PI)
+        : (u > 0.58 ? Math.sin(((u - 0.58) / 0.42) * Math.PI) * 0.50 : 0.0);
+
+      // 4. Crisp Finger-Tap / Click Impulse at the Apex (u in 0.44..0.62)
+      let tapPulse = 0;
+      if (u >= 0.44 && u <= 0.62) {
+        tapPulse = Math.sin(((u - 0.44) / 0.18) * Math.PI);
+      }
+
+      // Fire exact impact event when finger presses the project link (u >= 0.50)
+      if (u >= 0.50 && !reachAnim.firedImpact) {
+        reachAnim.firedImpact = true;
+        window.dispatchEvent(new CustomEvent('pika-hand-tapped-card', { detail: { id: reachAnim.id } }));
+      }
+
+      tgtBodyRotY   = tgt.bodyRotY * reachW;
+      tgtBodyShiftX = tgt.bodyShiftX * reachW + tgt.sign * 0.018 * tapPulse;
+      tgtTorsoLeanZ = tgt.bodyLeanZ * reachW - tgt.sign * 0.015 * tapPulse;
+
+      tgtHeadY = tgt.headY * headLead;
+      tgtHeadX = tgt.headX * headLead + 0.06 * tapPulse;
+      tgtHeadZ = tgt.headZ * headLead;
+
+      const activeArmZ  = tgt.armZ * reachW + tgt.sign * 0.06 * tapPulse;
+      const activeArmX  = tgt.armX * reachW - 0.08 * liftArc + 0.08 * tapPulse;
+      const activeArmY  = tgt.armY * reachW - tgt.sign * 0.08 * tapPulse;
+      const activeForeZ = tgt.foreZ * reachW - tgt.sign * 0.05 * liftArc + tgt.sign * 0.06 * tapPulse;
+      const activeForeX = tgt.foreX * reachW - 0.10 * liftArc + 0.10 * tapPulse;
+      const activeForeY = tgt.foreY * reachW + tgt.sign * 0.08 * tapPulse;
+
+      if (tgt.side === 'left') {
+        tgtLArmZ = activeArmZ; tgtLArmX = activeArmX; tgtLArmY = activeArmY;
+        tgtLForeZ = activeForeZ; tgtLForeX = activeForeX; tgtLForeY = activeForeY;
+        tgtRArmZ = 0.06 * reachW; tgtRArmX = 0.05 * reachW;
+      } else {
+        tgtRArmZ = activeArmZ; tgtRArmX = activeArmX; tgtRArmY = activeArmY;
+        tgtRForeZ = activeForeZ; tgtRForeX = activeForeX; tgtRForeY = activeForeY;
+        tgtLArmZ = -0.06 * reachW; tgtLArmX = 0.05 * reachW;
+      }
+
+      if (u >= 1.0) {
+        reachAnim.active = false;
+      }
+    } else if (waveAnim.active) {
+      waveAnim.t += dt;
+      const u = Math.min(1.0, waveAnim.t / waveAnim.duration);
+      // ยกแขนขึ้น → โบก → ลดแขนลง
+      const raiseW = u < 0.18 ? minJerk(u / 0.18) : (u > 0.82 ? 1.0 - minJerk((u - 0.82) / 0.18) : 1.0);
+      const wag = Math.sin(waveAnim.t * 11.0) * raiseW;
+
+      tgtBodyRotY = 0.08 * raiseW;
+      tgtTorsoLeanZ = -0.03 * raiseW;
+      tgtHeadY = -0.08 * raiseW;
+      tgtHeadX = -0.04 * raiseW;
+      tgtHeadZ = 0.10 * raiseW;
+
+      tgtLArmZ = -1.75 * raiseW - 0.05 * wag;
+      tgtLArmX = -0.12 * raiseW;
+      tgtLForeZ = -0.95 * raiseW + 0.32 * wag;
+      tgtLForeTwist = -2.9 * raiseW;
+      tgtRArmZ = 0.05 * raiseW;
+
+      if (u >= 1.0) {
+        waveAnim.active = false;
+      }
+    } else {
+      let hoverTgt = hoveredProjectId ? poseFor(hoveredProjectId) : null;
+      if (hoverTgt) {
+        tgtBodyRotY = hoverTgt.bodyRotY * 0.35;
+        tgtBodyShiftX = hoverTgt.bodyShiftX * 0.30;
+        tgtTorsoLeanZ = hoverTgt.bodyLeanZ * 0.30;
+        tgtHeadY = hoverTgt.headY * 0.78;
+        tgtHeadX = hoverTgt.headX * 0.70;
+        tgtHeadZ = hoverTgt.headZ * 0.65;
+        if (hoverTgt.side === 'left') {
+          tgtLArmZ = hoverTgt.armZ * 0.25;
+          tgtLArmX = -0.08;
+          tgtLForeX = -0.08;
+        } else {
+          tgtRArmZ = hoverTgt.armZ * 0.25;
+          tgtRArmX = -0.08;
+          tgtRForeX = -0.08;
+        }
+      } else {
+        let nodPitch = 0;
+        if (nodTimer > 0) {
+          nodTimer -= dt;
+          nodPitch = Math.sin(nodTimer * 10) * 0.09;
+        }
+        curLookY += (targetLookY - curLookY) * 0.08;
+        curLookX += (targetLookX - curLookX) * 0.08;
+        tgtHeadY = curLookY * 0.65;
+        tgtHeadX = curLookX * 0.40 + nodPitch;
+
+        // Reset vertical position when not celebrating/sprinting
+        if (currentPose !== 'celebrate' && currentPose !== 'sprint' && rootGroup) {
+          rootGroup.position.y = -0.02;
+        }
+
+        poseTimer += dt;
+
+        // LIVELY CONTINUOUS 12-POSE ANIMATION SYSTEM
+        if (currentPose === 'wave') {
+          // Slide 1: Friendly greeting - wave for ~2.6s then smoothly relax arm naturally
+          const isWaving = poseTimer < 2.6;
+          if (isWaving) {
+            const waveU = poseTimer / 2.6;
+            const raiseW = waveU < 0.18 ? (waveU / 0.18) : (waveU > 0.82 ? (1.0 - (waveU - 0.82) / 0.18) : 1.0);
+            const wag = Math.sin(poseTimer * 10.0) * raiseW;
+            tgtLArmZ = -1.70 * raiseW - 0.12 * wag;
+            tgtLArmX = -0.15 * raiseW;
+            tgtLForeZ = (-0.15 * (1.0 - raiseW)) + (-0.95 + 0.35 * wag) * raiseW;
+            tgtLForeTwist = -2.9 * raiseW;
+            tgtHeadZ = 0.10 * raiseW + 0.03 * wag;
+            tgtHeadY = -0.08 * raiseW;
+            tgtCharLeanZ = -0.02 * raiseW + 0.01 * wag;
+            tgtTorsoLeanZ = 0;
+            tgtRArmZ = 0.06;
+          } else {
+            // Lower arm to natural standing pose, gentle breathing idle
+            const breath = Math.sin(time * 2.2) * 0.02;
+            tgtLArmZ = 0.08 + breath;
+            tgtLArmX = 0.05;
+            tgtLForeZ = -0.15;
+            tgtLForeTwist = 0;
+            tgtHeadZ = 0.02;
+            tgtHeadY = 0;
+            tgtCharLeanZ = 0;
+            tgtTorsoLeanZ = 0;
+            tgtRArmZ = 0.08 - breath;
+            tgtRArmX = 0.05;
+          }
+        } else if (currentPose === 'think') {
+          // Slide 2: Deep thinking - hand to chin, finger tapping, head tilting
+          const tap = Math.sin(time * 5.0) * 0.06;
+          tgtBodyRotY = -0.08;
+          tgtCharLeanZ = -0.03 + Math.sin(time * 2.0) * 0.01;
+          tgtTorsoLeanZ = 0;
+          tgtHeadZ = 0.20 + Math.sin(time * 2.2) * 0.03;
+          tgtHeadX = 0.16 + Math.cos(time * 2.2) * 0.03;
+          tgtHeadY = 0.12;
+          tgtRArmZ = 1.20 + tap;
+          tgtRArmX = 0.55;
+          tgtRForeZ = 1.30 + tap;
+          tgtRForeX = 0.38;
+          tgtLArmZ = -0.35;
+          tgtLArmX = 0.15;
+          tgtLForeZ = -0.45;
+        } else if (currentPose === 'point') {
+          // Slide 3: Decisive pointing towards presentation deck on the right
+          tgtBodyRotY = -0.30;
+          tgtCharLeanZ = 0.03;
+          tgtTorsoLeanZ = 0;
+          tgtHeadY = 0.38 + Math.sin(time * 2.5) * 0.03;
+          tgtHeadX = -0.06;
+          tgtHeadZ = 0.03;
+          tgtLArmZ = -1.55 + Math.sin(time * 3.5) * 0.05;
+          tgtLArmX = -0.52;
+          tgtLArmY = 0.38;
+          tgtLForeZ = -0.18;
+          tgtLForeTwist = -1.6;
+          tgtRArmZ = 0.10;
+        } else if (currentPose === 'reach_click') {
+          // Slide 4: Hand reaching and tapping project card
+          tgtBodyRotY = 0.22;
+          tgtHeadY = -0.42;
+          tgtHeadX = -0.14;
+          tgtLArmZ = -0.78;
+          tgtLArmX = -0.18;
+          tgtLForeZ = -0.08;
+        } else if (currentPose === 'scan') {
+          // Slide 5: Active scanning gaze - head panning smoothly across TOR
+          const scanPan = Math.sin(time * 2.8);
+          tgtBodyRotY = scanPan * 0.22;
+          tgtHeadY = scanPan * 0.48;
+          tgtHeadX = 0.14 + Math.cos(time * 2.0) * 0.06;
+          tgtLArmZ = -0.75 + scanPan * 0.10;
+          tgtLArmX = 0.38;
+          tgtLForeZ = -0.82;
+          tgtRArmZ = 0.75 - scanPan * 0.10;
+          tgtRArmX = 0.38;
+          tgtRForeZ = 0.82;
+        } else if (currentPose === 'holo') {
+          // Slide 6: Presenting floating C4 hologram - hands floating rhythmically
+          const floatHolo = Math.sin(time * 3.5) * 0.08;
+          tgtCharLeanZ = 0.03;
+          tgtTorsoLeanZ = 0;
+          tgtHeadX = 0.18 + Math.sin(time * 3.5) * 0.03;
+          tgtHeadZ = 0.0;
+          tgtLArmZ = -0.90 + floatHolo;
+          tgtLArmX = 0.48;
+          tgtLArmY = 0.28;
+          tgtLForeZ = -0.95;
+          tgtLForeTwist = -1.2;
+          tgtRArmZ = 0.90 - floatHolo;
+          tgtRArmX = 0.48;
+          tgtRArmY = 0.28;
+          tgtRForeZ = 0.95;
+        } else if (currentPose === 'look_down') {
+          // Slide 7: Inspecting security foundation below
+          tgtCharLeanZ = 0.02;
+          tgtTorsoLeanZ = 0;
+          tgtHeadX = 0.38 + Math.sin(time * 2.0) * 0.04;
+          tgtHeadY = 0.0;
+          tgtLArmZ = -0.20;
+          tgtLArmX = 0.12;
+          tgtRArmZ = 0.20;
+          tgtRArmX = 0.12;
+        } else if (currentPose === 'shield') {
+          // Slide 8: Alert security guard / shield stance
+          const sway = Math.sin(time * 3.5) * 0.03;
+          tgtCharLeanZ = 0.03 + sway;
+          tgtTorsoLeanZ = 0;
+          tgtHeadX = 0.16;
+          tgtLArmZ = -1.05;
+          tgtLArmX = 0.70;
+          tgtLForeZ = -1.25;
+          tgtLForeTwist = -1.9;
+          tgtRArmZ = 1.05;
+          tgtRArmX = 0.70;
+          tgtRForeZ = 1.25;
+        } else if (currentPose === 'inspect') {
+          // Slide 9: Audit log inspection - holding pane, scrutinizing line by line
+          tgtCharLeanZ = 0.03;
+          tgtTorsoLeanZ = 0;
+          tgtHeadX = 0.26 + Math.sin(time * 2.8) * 0.03;
+          tgtHeadY = 0.24 + Math.cos(time * 2.8) * 0.04;
+          tgtHeadZ = -0.06;
+          tgtRArmZ = 0.98 + Math.sin(time * 3.0) * 0.05;
+          tgtRArmX = 0.38;
+          tgtRForeZ = 1.05;
+          tgtLArmZ = -0.45;
+          tgtLArmX = 0.22;
+        } else if (currentPose === 'sprint') {
+          // Slide 10: High-velocity performance sprint! Pumping arms, forward lean, running bounce
+          tgtCharLeanZ = 0.03;
+          tgtTorsoLeanZ = 0;
+          tgtBodyShiftX = 0.02;
+          const run = Math.sin(time * 9.5);
+          tgtLArmZ = -0.55 + run * 0.65;
+          tgtLArmX = 0.20;
+          tgtLForeZ = -0.85;
+          tgtRArmZ = 0.55 - run * 0.65;
+          tgtRArmX = 0.20;
+          tgtRForeZ = 0.85;
+          tgtHeadX = -0.08;
+          tgtHeadY = run * 0.04;
+          if (rootGroup) rootGroup.position.y = -0.03 + Math.abs(run) * 0.025;
+        } else if (currentPose === 'celebrate') {
+          // Slide 11: Triumphant celebration - arms in high V, jumping happily!
+          const jump = Math.sin(time * 6.2);
+          tgtLArmZ = -2.48 + jump * 0.16;
+          tgtLArmX = -0.18;
+          tgtLForeZ = -0.45;
+          tgtRArmZ = 2.48 - jump * 0.16;
+          tgtRArmX = -0.18;
+          tgtRForeZ = 0.45;
+          tgtHeadX = -0.26;
+          tgtHeadZ = jump * 0.12;
+          if (rootGroup) rootGroup.position.y = -0.02 + Math.abs(jump) * 0.055;
+        } else if (currentPose === 'free_spin') {
+          // Slide 12: Continuous 360 pirouette spin & cordial bow
+          curCharRotY += dt * 3.2;
+          tgtLArmZ = -0.95;
+          tgtLArmX = 0.22;
+          tgtLForeZ = -0.55;
+          tgtRArmZ = 0.95;
+          tgtRArmX = 0.22;
+          tgtRForeZ = 0.55;
+          tgtHeadX = 0.14;
+        }
+      }
+    }
+
+    const lerpRate = reachAnim.active ? 0.26 : (waveAnim.active ? 0.20 : 0.11);
+    curCharRotY   += (tgtBodyRotY - curCharRotY) * lerpRate;
+    curCharShiftX += (tgtBodyShiftX - curCharShiftX) * lerpRate;
+    curCharLeanZ  += (tgtCharLeanZ - curCharLeanZ) * lerpRate;
+    curTorsoLeanZ += (tgtTorsoLeanZ - curTorsoLeanZ) * lerpRate;
+
+    curHeadRotY += (tgtHeadY - curHeadRotY) * lerpRate;
+    curHeadRotX += (tgtHeadX - curHeadRotX) * lerpRate;
+    curHeadRotZ += (tgtHeadZ - curHeadRotZ) * lerpRate;
+
+    curLeftArmX  += (tgtLArmX - curLeftArmX) * lerpRate;
+    curLeftArmY  += (tgtLArmY - curLeftArmY) * lerpRate;
+    curLeftArmZ  += (tgtLArmZ - curLeftArmZ) * lerpRate;
+    curLeftForeX += (tgtLForeX - curLeftForeX) * lerpRate;
+    curLeftForeY += (tgtLForeY - curLeftForeY) * lerpRate;
+    curLeftForeZ += (tgtLForeZ - curLeftForeZ) * lerpRate;
+    curLeftForeTwist += (tgtLForeTwist - curLeftForeTwist) * lerpRate;
+
+    curRightArmX  += (tgtRArmX - curRightArmX) * lerpRate;
+    curRightArmY  += (tgtRArmY - curRightArmY) * lerpRate;
+    curRightArmZ  += (tgtRArmZ - curRightArmZ) * lerpRate;
+    curRightForeX += (tgtRForeX - curRightForeX) * lerpRate;
+    curRightForeY += (tgtRForeY - curRightForeY) * lerpRate;
+    curRightForeZ += (tgtRForeZ - curRightForeZ) * lerpRate;
+
+    charGroup.rotation.y = dragRotY + curCharRotY;
+    charGroup.rotation.x = dragRotX;
+    charGroup.rotation.z = curCharLeanZ;
+    charGroup.position.x = curCharShiftX;
+
+    // Torso micro-movement only: locks the crew-neck collar firmly with the neck!
+    torsoGroup.rotation.z = Math.max(-0.015, Math.min(0.015, curTorsoLeanZ));
+
+    headMasterGroup.rotation.y = curHeadRotY;
+    headMasterGroup.rotation.x = curHeadRotX;
+    headMasterGroup.rotation.z = curHeadRotZ;
+
+    if (leftArmRig) {
+      leftArmRig.armHolder.rotation.set(curLeftArmX, curLeftArmY, curLeftArmZ);
+      leftArmRig.forearmGroup.rotation.set(curLeftForeX, curLeftForeY, curLeftForeZ);
+      // หมุนรอบแกนแขนท่อนล่าง (หลังตั้งมุมข้อศอกแล้ว) ให้ฝ่ามือหันออกหาผู้ชม
+      leftArmRig.forearmGroup.rotateY(curLeftForeTwist);
+    }
+    if (rightArmRig) {
+      rightArmRig.armHolder.rotation.set(curRightArmX, curRightArmY, curRightArmZ);
+      rightArmRig.forearmGroup.rotation.set(curRightForeX, curRightForeY, curRightForeZ);
+    }
+
+    const breathe = Math.sin(time * 2.0);
+    torsoGroup.scale.set(1.0 + breathe * 0.005, 1.0 + breathe * 0.007, 1.0 + breathe * 0.005);
+    headMasterGroup.position.y = HEAD_PIVOT_Y + breathe * 0.005;
+    charGroup.position.y = Math.sin(time * 1.2) * 0.006;
+    shadowMesh.position.x = curCharShiftX * 0.85;
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+  // ทักทายครั้งแรกตอนเข้าหน้า พร้อมกล่องคำพูดที่เด้งขึ้นมา
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    setTimeout(() => { talkAnim.active = true; poseTimer = 0; }, 700);
+  }
+})();
